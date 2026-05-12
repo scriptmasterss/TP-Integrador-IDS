@@ -1,14 +1,14 @@
 import mysql.connector
-import os
+import config
 
 def obtener_conexion():
     try:
         connection = mysql.connector.connect(
-            host=os.environ.get('DB_HOST', 'db'),
-            user=os.environ.get('DB_USER', 'root'),
-            password=os.environ.get('DB_PASSWORD', 'root'),
-            database=os.environ.get('DB_NAME'),
-            port=os.environ.get('DB_PORT', 3306)
+            host=config.DB_HOST,
+            user=config.DB_USER,
+            password=config.DB_PASSWORD,
+            database=config.DB_NAME,
+            port=config.DB_PORT
         )
         return connection
     
