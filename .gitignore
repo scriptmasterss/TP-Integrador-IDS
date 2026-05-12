@@ -1,10 +1,55 @@
-# Python-generated files
+# Python bytecode and caches
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Packaging and build output
 build/
 dist/
 wheels/
-*.egg-info
+*.egg-info/
 
 # Virtual environments
-.venv
+.venv/
+venv/
+env/
+ENV/
+
+# Flask and local runtime files
+instance/
+.webassets-cache
+*.log
+*.pid
+
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*password*.txt
+
+# Local databases and dumps
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+
+# OS and IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.code-workspace
+
+# Tooling and temporary files
+.cache/
+.tmp/
+tmp/
+temp/
