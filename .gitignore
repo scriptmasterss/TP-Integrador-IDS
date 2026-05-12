@@ -1,4 +1,4 @@
-# Python bytecode and caches
+# Archivos compilados de Python y cachés
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,25 +8,25 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Packaging and build output
+# Empaquetado y salida de compilación
 build/
 dist/
 wheels/
 *.egg-info/
 
-# Virtual environments
+# Entornos virtuales
 .venv/
 venv/
 env/
 ENV/
 
-# Flask and local runtime files
+# Archivos de Flask y archivos de ejecución local
 instance/
 .webassets-cache
 *.log
 *.pid
 
-# Environment variables and local secrets
+# Variables de entorno y secretos locales
 .env
 .env.*
 !.env.example
@@ -34,21 +34,21 @@ instance/
 *.key
 *password*.txt
 
-# Local databases and dumps
+# Bases de datos locales y volcados
 *.sqlite
 *.sqlite3
 *.db
 *.dump
 *.sql.gz
 
-# OS and IDEs
+# Archivos del sistema operativo e IDEs
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 *.code-workspace
 
-# Tooling and temporary files
+# Herramientas y archivos temporales
 .cache/
 .tmp/
 tmp/
