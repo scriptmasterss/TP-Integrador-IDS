@@ -1,73 +1,55 @@
-# React + TypeScript + Vite
+# Biblioteca FIUBA 
+**Plataforma web para la gestión de préstamos/reservas universitarios** — Proyecto Final Integrador  
+Introducción al Desarrollo de Software · FIUBA · 2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Sistema web para administrar préstamos de equipamiento técnico (placas electrónicas, libros, PCs, proyectores/pantalla de proyección y cables) entre alumnos/docentes y la biblioteca/laboratorios de la facultad.
 
-## React Compiler
+Permite a los alumnos buscar materiales y solicitar préstamos/reservas, y a los administradores gestionar el inventario, aprobar solicitudes, generar QRs de entrega y exportar reportes de retraso en entrega en PDF.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Integrantes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Nombre                          | Padrón    |
+|---------------------------------|-----------|
+| Karla Vanesa Torres Pérez       | 114908    |
+| Camila Delfino                  | 113552    |
+| Sofía Belén Machuca             | 113873    |
+| Patricio Xavier López Apolo     | 115353    |
+| Erick Fernando Carvalho Sánchez | 115509    |
+| Abril Chiara Berlot             | 114287    |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Requisitos previos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js--->(https://nodejs.org/) v18 o superior
+- npm v9 o superior
+
+### Instalación y ejecución del mockup
+
+```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Levantar el servidor de desarrollo
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+El proyecto estará disponible en `http://localhost:5173` (o el puerto que indique la consola).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Incluye las siguientes pantallas:
+- **Dashboard del administrador** — métricas, gráficos de demanda y tabla de préstamos/reservas
+- **Inventario** — búsqueda y filtrado de materiales con estado de disponibilidad
+- **Formulario de solicitud** — carga de datos y fechas del préstamo/reserva
+- **Confirmación con QR** — detalle del préstamo/reserva y QR dinámico para escanear al retirar/devolver
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## Licencia
+
+Proyecto académico — FIUBA 2026
