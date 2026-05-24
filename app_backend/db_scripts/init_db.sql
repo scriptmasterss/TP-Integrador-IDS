@@ -1,67 +1,67 @@
-CREATE TABLE IF NOT EXISTS usuario (
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
-    mail VARCHAR(50) UNIQUE NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
     score INT DEFAULT 0,
-    rol enum('alumno', 'profesor', 'bibliotecario', 'admin') NOT NULL DEFAULT 'alumno',
-    carrera VARCHAR(50),
+    role enum('student', 'teacher', 'librarian', 'admin') NOT NULL DEFAULT 'student',
+    major VARCHAR(50),
     password_hash VARCHAR(255) DEFAULT ''
 );
 
-CREATE TABLE IF NOT EXISTS articulos (
+CREATE TABLE IF NOT EXISTS items (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_art VARCHAR(50) NOT NULL,
-    tipo VARCHAR(50) NOT NULL,
-    seccion VARCHAR(50) NOT NULL,
-    prestacion_maxima INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    section VARCHAR(50) NOT NULL,
+    max_loan_duration INT NOT NULL,
     stock INT DEFAULT 1,
-    necesita_reparacion BOOLEAN DEFAULT FALSE
+    needs_repair BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS reserva (
+CREATE TABLE IF NOT EXISTS reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    id_reservado INT NOT NULL,
-    estado_reserva VARCHAR(20) NOT NULL DEFAULT 'pendiente',
-    fecha_retiro DATETIME NOT NULL,
-    fecha_regreso DATETIME NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
-    FOREIGN KEY (id_reservado) REFERENCES articulos(id)
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    pickup_date DATETIME NOT NULL,
+    return_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (item_id) REFERENCES items(id)
 );
 
-CREATE TABLE IF NOT EXISTS estado_devuelto (
+CREATE TABLE IF NOT EXISTS return_statuses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_reserva INT NOT NULL,
-    dias_retraso INT DEFAULT 0,
-    condiciones VARCHAR(50),
-    FOREIGN KEY (id_reserva) REFERENCES reserva(id)
+    reservation_id INT NOT NULL,
+    days_late INT DEFAULT 0,
+    conditions VARCHAR(50),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id)
 );
 
-CREATE TABLE IF NOT EXISTS penalizacion (
+CREATE TABLE IF NOT EXISTS penalties (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT,
-    id_reserva INT,
-    motivo VARCHAR(255),
-    fecha_inicio DATETIME,
-    fecha_fin DATETIME,
-    activa BOOLEAN DEFAULT TRUE,
-    severity enum('baja', 'media', 'alta') NOT NULL DEFAULT 'media',
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
-    FOREIGN KEY (id_reserva) REFERENCES reserva(id)
+    user_id INT,
+    reservation_id INT,
+    reason VARCHAR(255),
+    start_date DATETIME,
+    end_date DATETIME,
+    active BOOLEAN DEFAULT TRUE,
+    severity enum('low', 'medium', 'high') NOT NULL DEFAULT 'medium',
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id)
 );
 
-CREATE TABLE IF NOT EXISTS qr (
+CREATE TABLE IF NOT EXISTS qr_codes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_reserva INT,
-    fecha_generado DATETIME NOT NULL,
-    codigo VARCHAR(255) UNIQUE,
-    escaneado BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (id_reserva) REFERENCES reserva(id)
+    reservation_id INT,
+    generated_at DATETIME NOT NULL,
+    code VARCHAR(255) UNIQUE,
+    scanned BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (reservation_id) REFERENCES reservations(id)
 );
 
-CREATE TABLE IF NOT EXISTS normativa (
+CREATE TABLE IF NOT EXISTS policies (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100),
-    descripcion TEXT,
-    fecha DATETIME
+    title VARCHAR(100),
+    description TEXT,
+    date DATETIME
 );

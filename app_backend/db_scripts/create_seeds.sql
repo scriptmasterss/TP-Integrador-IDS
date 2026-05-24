@@ -1,6 +1,6 @@
 USE sistema_prestamos;
 
-INSERT INTO usuario (nombre, mail, score, rol, carrera) VALUES
+INSERT INTO users (name, email, score, role, major) VALUES
 ('User 1', 'user1@example.com', 10, 'student', 'Engineering'),
 ('User 2', 'user2@example.com', 12, 'student', 'Architecture'),
 ('User 3', 'user3@example.com', 5, 'student', 'Medicine'),
@@ -52,7 +52,7 @@ INSERT INTO usuario (nombre, mail, score, rol, carrera) VALUES
 ('User 49', 'user49@example.com', 48, 'student', 'Biology'),
 ('User 50', 'user50@example.com', 49, 'student', 'Mathematics');
 
-INSERT INTO articulos (nombre_art, tipo, seccion, prestacion_maxima, stock, necesita_reparacion) VALUES
+INSERT INTO items (name, type, section, max_loan_duration, stock, needs_repair) VALUES
 ('Item 1','Tool','Workshop',10,5,0),
 ('Item 2','Equipment','Laboratory',20,2,0),
 ('Item 3','Equipment','Laboratory',15,1,1),
@@ -104,7 +104,7 @@ INSERT INTO articulos (nombre_art, tipo, seccion, prestacion_maxima, stock, nece
 ('Item 49','Instrument','Music',13,4,0),
 ('Item 50','Tool','Workshop',18,2,0);
 
-INSERT INTO reserva (id_usuario, id_reservado, estado_reserva, fecha_retiro, fecha_regreso) VALUES
+INSERT INTO reservations (user_id, item_id, status, pickup_date, return_date) VALUES
 (1,1,'pending', DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_ADD(DATE_SUB(NOW(), INTERVAL 1 DAY), INTERVAL 7 DAY)),
 (2,2,'approved', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_ADD(DATE_SUB(NOW(), INTERVAL 2 DAY), INTERVAL 5 DAY)),
 (3,3,'returned', DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_ADD(DATE_SUB(NOW(), INTERVAL 3 DAY), INTERVAL 3 DAY)),
@@ -156,7 +156,7 @@ INSERT INTO reserva (id_usuario, id_reservado, estado_reserva, fecha_retiro, fec
 (49,49,'approved', DATE_SUB(NOW(), INTERVAL 49 DAY), DATE_ADD(DATE_SUB(NOW(), INTERVAL 49 DAY), INTERVAL 5 DAY)),
 (50,50,'returned', DATE_SUB(NOW(), INTERVAL 50 DAY), DATE_ADD(DATE_SUB(NOW(), INTERVAL 50 DAY), INTERVAL 3 DAY));
 
-INSERT INTO estado_devuelto (id_reserva, dias_retraso, condiciones) VALUES
+INSERT INTO return_statuses (reservation_id, days_late, conditions) VALUES
 (1,0,'OK'),(2,2,'Minor wear'),(3,0,'OK'),(4,5,'Repair needed'),(5,1,'Minor damage'),
 (6,0,'OK'),(7,0,'OK'),(8,3,'Stains'),(9,0,'OK'),(10,0,'OK'),
 (11,0,'OK'),(12,0,'OK'),(13,4,'Scratches'),(14,0,'OK'),(15,2,'Minor delay'),
@@ -168,7 +168,7 @@ INSERT INTO estado_devuelto (id_reserva, dias_retraso, condiciones) VALUES
 (41,0,'OK'),(42,0,'OK'),(43,0,'OK'),(44,0,'OK'),(45,0,'OK'),
 (46,0,'OK'),(47,0,'OK'),(48,0,'OK'),(49,0,'OK'),(50,0,'OK');
 
-INSERT INTO penalizacion (id_usuario, motivo, fecha_inicio, fecha_fin, activa) VALUES
+INSERT INTO penalties (user_id, reason, start_date, end_date, active) VALUES
 (1,'Late return', DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 30 DAY), 0),
 (2,'Equipment damage', DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), 0),
 (3,'Lost material', DATE_SUB(NOW(), INTERVAL 15 DAY), DATE_SUB(NOW(), INTERVAL 5 DAY), 0),
@@ -220,7 +220,7 @@ INSERT INTO penalizacion (id_usuario, motivo, fecha_inicio, fecha_fin, activa) V
 (49,'Late return', NOW(), DATE_ADD(NOW(), INTERVAL 2 DAY), 1),
 (50,'Equipment damage', NOW(), DATE_ADD(NOW(), INTERVAL 2 DAY), 1);
 
-INSERT INTO qr (id_reserva, fecha_generado, codigo, escaneado) VALUES
+INSERT INTO qr_codes (reservation_id, generated_at, code, scanned) VALUES
 (1, DATE_SUB(NOW(), INTERVAL 1 DAY), 'QR0001', 0),(2, DATE_SUB(NOW(), INTERVAL 2 DAY), 'QR0002', 0),(3, DATE_SUB(NOW(), INTERVAL 3 DAY), 'QR0003', 1),(4, DATE_SUB(NOW(), INTERVAL 4 DAY), 'QR0004', 0),(5, DATE_SUB(NOW(), INTERVAL 5 DAY), 'QR0005', 0),
 (6, DATE_SUB(NOW(), INTERVAL 6 DAY), 'QR0006', 0),(7, DATE_SUB(NOW(), INTERVAL 7 DAY), 'QR0007', 1),(8, DATE_SUB(NOW(), INTERVAL 8 DAY), 'QR0008', 0),(9, DATE_SUB(NOW(), INTERVAL 9 DAY), 'QR0009', 0),(10, DATE_SUB(NOW(), INTERVAL 10 DAY), 'QR0010', 0),
 (11, DATE_SUB(NOW(), INTERVAL 11 DAY), 'QR0011', 0),(12, DATE_SUB(NOW(), INTERVAL 12 DAY), 'QR0012', 0),(13, DATE_SUB(NOW(), INTERVAL 13 DAY), 'QR0013', 1),(14, DATE_SUB(NOW(), INTERVAL 14 DAY), 'QR0014', 0),(15, DATE_SUB(NOW(), INTERVAL 15 DAY), 'QR0015', 0),
@@ -232,7 +232,7 @@ INSERT INTO qr (id_reserva, fecha_generado, codigo, escaneado) VALUES
 (41, DATE_SUB(NOW(), INTERVAL 41 DAY), 'QR0041', 0),(42, DATE_SUB(NOW(), INTERVAL 42 DAY), 'QR0042', 0),(43, DATE_SUB(NOW(), INTERVAL 43 DAY), 'QR0043', 0),(44, DATE_SUB(NOW(), INTERVAL 44 DAY), 'QR0044', 0),(45, DATE_SUB(NOW(), INTERVAL 45 DAY), 'QR0045', 0),
 (46, DATE_SUB(NOW(), INTERVAL 46 DAY), 'QR0046', 0),(47, DATE_SUB(NOW(), INTERVAL 47 DAY), 'QR0047', 0),(48, DATE_SUB(NOW(), INTERVAL 48 DAY), 'QR0048', 0),(49, DATE_SUB(NOW(), INTERVAL 49 DAY), 'QR0049', 0),(50, DATE_SUB(NOW(), INTERVAL 50 DAY), 'QR0050', 0);
 
-INSERT INTO normativa (titulo, descripcion, fecha) VALUES
+INSERT INTO policies (title, description, date) VALUES
 ('Normativa 1','Descripcion de normativa 1', DATE_SUB(NOW(), INTERVAL 400 DAY)),
 ('Normativa 2','Descripcion de normativa 2', DATE_SUB(NOW(), INTERVAL 390 DAY)),
 ('Normativa 3','Descripcion de normativa 3', DATE_SUB(NOW(), INTERVAL 380 DAY)),

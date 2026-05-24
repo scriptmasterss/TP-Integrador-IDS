@@ -33,10 +33,10 @@ def valid_password(password, password_hash):
         return False
 
 
-def generar_token(user_id, rol):
+def generar_token(user_id, role):
     payload = {
         "user_id": user_id,
-        "rol": rol,
+        "role": role,
     }
 
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -62,7 +62,7 @@ def extraer_token_del_header():
     return header[len("Bearer ") :].strip(), "Ok"
 
 
-def requiere_auth(rol):
+def requiere_auth(role):
     def wrapperGenerator(route):
 
         def wrapper(*args, **kwargs):
@@ -76,7 +76,7 @@ def requiere_auth(rol):
             if payload is None:
                 return jsonify({"error": payloadError}), HTTP_UNAUTHORIZED
 
-            if payload.get("rol") != rol:
+            if payload.get("role") != role:
                 return jsonify({"error": MSG_UNAUTHORIZED}), HTTP_UNAUTHORIZED
 
             return route(*args, **kwargs)
@@ -111,7 +111,7 @@ def login():
     try:
         cursor = conn.cursor(dictionary=True)
 
-        sql_query = "SELECT id, nombre, mail, score, rol, carrera, password_hash FROM usuario WHERE nombre = %(value)s LIMIT 1"
+        sql_query = "SELECT id, name, email, score, role, major, password_hash FROM users WHERE name = %(value)s LIMIT 1"
         value = {"value": username}
 
         cursor.execute(sql_query, value)
@@ -133,17 +133,17 @@ def login():
 
         user_profile = {
             "id": user.get("id"),
-            "nombre": user.get("nombre"),
-            "mail": user.get("mail"),
+            "name": user.get("name"),
+            "email": user.get("email"),
             "score": user.get("score"),
-            "rol": user.get("rol"),
-            "carrera": user.get("carrera"),
+            "role": user.get("role"),
+            "major": user.get("major"),
         }
 
-        token = generar_token(user.get("id"), user.get("rol"))
+        token = generar_token(user.get("id"), user.get("role"))
 
         return jsonify(
-            {"token": token, "role": user.get("rol"), "user": user_profile}
+            {"token": token, "role": user.get("role"), "user": user_profile}
         ), HTTP_OK
 
     except Exception:

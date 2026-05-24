@@ -34,15 +34,15 @@ def get_user_loans(user_id):
 
         sql_query = """
             SELECT r.id,
-                   r.id_reservado,
-                   a.nombre_art AS nombre_articulo,
-                   r.estado_reserva,
-                   r.fecha_retiro,
-                   r.fecha_regreso
-            FROM reserva r
-            LEFT JOIN articulos a ON r.id_reservado = a.id
-            WHERE r.id_usuario = %(user_id)s
-            ORDER BY r.fecha_retiro DESC
+                   r.item_id,
+                   a.name AS item_name,
+                   r.status,
+                   r.pickup_date,
+                   r.return_date
+            FROM reservations r
+            LEFT JOIN items a ON r.item_id = a.id
+            WHERE r.user_id = %(user_id)s
+            ORDER BY r.pickup_date DESC
         """
         values = {"user_id": user_id}
 
@@ -97,13 +97,13 @@ def create_user():
 
     try:
         cursor = conn.cursor()
-        sql = "INSERT INTO usuario (nombre, mail, score, rol, carrera) VALUES (%(nombre)s, %(mail)s, %(score)s, %(rol)s, %(carrera)s)"
+        sql = "INSERT INTO users (name, email, score, role, major) VALUES (%(name)s, %(email)s, %(score)s, %(role)s, %(major)s)"
         values = {
-            "nombre": data.get("nombre"),
-            "mail": data.get("mail"),
+            "name": data.get("name"),
+            "email": data.get("email"),
             "score": data.get("score") if data.get("score") is not None else 0,
-            "rol": data.get("rol"),
-            "carrera": data.get("carrera"),
+            "role": data.get("role"),
+            "major": data.get("major"),
         }
         cursor.execute(sql, values)
         conn.commit()
@@ -111,11 +111,11 @@ def create_user():
 
         user = {
             "id": user_id,
-            "nombre": data.get("nombre"),
-            "mail": data.get("mail"),
+            "name": data.get("name"),
+            "email": data.get("email"),
             "score": data.get("score") if data.get("score") is not None else 0,
-            "rol": data.get("rol"),
-            "carrera": data.get("carrera"),
+            "role": data.get("role"),
+            "major": data.get("major"),
         }
 
         return jsonify(user), HTTP_CREATED
@@ -176,7 +176,7 @@ def update_user(user_id):
 
     try:
         cursor = conn.cursor(dictionary=True)
-        sql = f"UPDATE usuario SET {set_clause} WHERE id = %(user_id)s"
+        sql = f"UPDATE users SET {set_clause} WHERE id = %(user_id)s"
         cursor.execute(sql, data)
         conn.commit()
 
@@ -184,7 +184,7 @@ def update_user(user_id):
             return jsonify({"message": MSG_NOT_FOUND}), HTTP_NOT_FOUND
 
         cursor.execute(
-            "SELECT id, nombre, mail, score, rol, carrera FROM usuario WHERE id = %(user_id)s",
+            "SELECT id, name, email, score, role, major FROM users WHERE id = %(user_id)s",
             {"user_id": user_id},
         )
 

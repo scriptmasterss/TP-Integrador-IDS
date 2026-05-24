@@ -20,7 +20,7 @@ def valid_user(data):
     if not isinstance(data, dict):
         return False, "payload_must_be_object"
 
-    required = ["nombre", "mail", "carrera"]
+    required = ["name", "email", "major"]
     for f in required:
         v = data.get(f)
         if v is None:
@@ -28,14 +28,14 @@ def valid_user(data):
         if isinstance(v, str) and v.strip() == "":
             return False, f"empty:{f}"
 
-    mail = data.get("mail")
-    if not isinstance(mail, str) or "@" not in mail or "." not in mail.split("@")[-1]:
-        return False, "invalid:mail"
+    email = data.get("email")
+    if not isinstance(email, str) or "@" not in email or "." not in email.split("@")[-1]:
+        return False, "invalid:email"
 
-    rol = data.get("rol")
-    allowed = ["alumno", "docente", "bibliotecario", "admin"]
-    if rol not in allowed and rol is not None:
-        return False, "invalid:rol"
+    role = data.get("role")
+    allowed = ["student", "teacher", "librarian", "admin"]
+    if role not in allowed and role is not None:
+        return False, "invalid:role"
 
     score = data.get("score")
     if score is not None:
@@ -46,9 +46,9 @@ def valid_user(data):
         except (ValueError, TypeError):
             return False, "invalid:score"
 
-    carrera = data.get("carrera")
-    if carrera is not None and not isinstance(carrera, str):
-        return False, "invalid:carrera"
+    major = data.get("major")
+    if major is not None and not isinstance(major, str):
+        return False, "invalid:major"
 
     return True, None
 
@@ -57,38 +57,38 @@ def valid_user_update(data):
     if not isinstance(data, dict):
         return False, "payload_must_be_object"
 
-    allowed = ["nombre", "mail", "rol", "carrera", "score"]
+    allowed = ["name", "email", "role", "major", "score"]
     if not any(k in data for k in allowed):
         return False, "no_updatable_fields"
 
-    if "nombre" in data:
-        if data["nombre"] is None:
-            return False, "null:nombre"
-        if not isinstance(data["nombre"], str):
-            return False, "invalid_type:nombre"
-        if data["nombre"].strip() == "":
-            return False, "empty:nombre"
+    if "name" in data:
+        if data["name"] is None:
+            return False, "null:name"
+        if not isinstance(data["name"], str):
+            return False, "invalid_type:name"
+        if data["name"].strip() == "":
+            return False, "empty:name"
 
-    if "mail" in data:
-        if data["mail"] is None:
-            return False, "null:mail"
-        if not isinstance(data["mail"], str):
-            return False, "invalid_type:mail"
-        if data["mail"].strip() == "":
-            return False, "empty:mail"
-        if "@" not in data["mail"] or "." not in data["mail"].split("@")[-1]:
-            return False, "invalid_format:mail"
+    if "email" in data:
+        if data["email"] is None:
+            return False, "null:email"
+        if not isinstance(data["email"], str):
+            return False, "invalid_type:email"
+        if data["email"].strip() == "":
+            return False, "empty:email"
+        if "@" not in data["email"] or "." not in data["email"].split("@")[-1]:
+            return False, "invalid_format:email"
 
-    if "rol" in data:
-        if data["rol"] is None:
-            return False, "null:rol"
-        if not isinstance(data["rol"], str):
-            return False, "invalid_type:rol"
-        if data["rol"].strip() == "":
-            return False, "empty:rol"
-        allowed_roles = ["alumno", "docente", "bibliotecario", "admin"]
-        if data["rol"] not in allowed_roles:
-            return False, "invalid_value:rol"
+    if "role" in data:
+        if data["role"] is None:
+            return False, "null:role"
+        if not isinstance(data["role"], str):
+            return False, "invalid_type:role"
+        if data["role"].strip() == "":
+            return False, "empty:role"
+        allowed_roles = ["student", "teacher", "librarian", "admin"]
+        if data["role"] not in allowed_roles:
+            return False, "invalid_value:role"
 
     if "score" in data:
         if data["score"] is None:
@@ -100,13 +100,13 @@ def valid_user_update(data):
         if s < 0:
             return False, "invalid_value:score"
 
-    if "carrera" in data:
-        if data.get("carrera") is None:
-            return False, "null:carrera"
-        if not isinstance(data.get("carrera"), str):
-            return False, "invalid_type:carrera"
-        if data.get("carrera").strip() == "":
-            return False, "empty:carrera"
+    if "major" in data:
+        if data.get("major") is None:
+            return False, "null:major"
+        if not isinstance(data.get("major"), str):
+            return False, "invalid_type:major"
+        if data.get("major").strip() == "":
+            return False, "empty:major"
 
     return True, None
 
@@ -147,7 +147,7 @@ def valid_penalty_patch(data):
             return False, "null:status"
         if not isinstance(data.get("status"), str):
             return False, "invalid_type:status"
-        if data.get("status") not in ("Activa", "Levantada"):
+        if data.get("status") not in ("Active", "Resolved"):
             return False, "invalid_value:status"
 
     if "severity" in data:

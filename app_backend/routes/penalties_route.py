@@ -39,26 +39,28 @@ def patch_penalty(penalty_id):
         return jsonify({"error": MSG_BAD_REQUEST, "detail": error}), HTTP_BAD_REQUEST
 
     if "status" in data:
-        data.update({"activa": 1 if data.get("status") == "Activa" else 0})
+        data.update({"active": 1 if data.get("status") == "Active" else 0})
         data.pop("status")
 
     if "notes" in data:
-        data.update({"motivo": data.get("notes")})
+        data.update({"reason": data.get("notes")})
         data.pop("notes")
 
-    keysToUpdate = data.keys()
+    keysToUpdate = list(data.keys())
 
-    if not data.get("activa", True):
-        keysToUpdate.append("fecha_fin = NOW()")
+    set_parts = [f"{k} = %({k})s" for k in keysToUpdate]
 
-    set_clause = ", ".join([f"{f} = %({f})s" for f in keysToUpdate])
+    if not data.get("active", True):
+        set_parts.append("end_date = NOW()")
+
+    set_clause = ", ".join(set_parts)
     data.update({"penalty_id": penalty_id})
 
     cursor = None
 
     try:
         cursor = conn.cursor(dictionary=True)
-        sql = f"UPDATE penalizacion SET {set_clause} WHERE id = %(penalty_id)s"
+        sql = f"UPDATE penalties SET {set_clause} WHERE id = %(penalty_id)s"
         cursor.execute(sql, data)
         conn.commit()
 
@@ -66,7 +68,7 @@ def patch_penalty(penalty_id):
             return jsonify({"message": MSG_NOT_FOUND}), HTTP_NOT_FOUND
 
         cursor.execute(
-            "SELECT id, id_usuario, motivo, fecha_inicio, fecha_fin, activa FROM penalizacion WHERE id = %(penalty_id)s",
+            "SELECT id, user_id, reason, start_date, end_date, active, severity FROM penalties WHERE id = %(penalty_id)s",
             {"penalty_id": penalty_id},
         )
 
@@ -77,17 +79,17 @@ def patch_penalty(penalty_id):
 
         response = {
             "id": row.get("id"),
-            "userId": row.get("id_usuario"),
+            "userId": row.get("user_id"),
             "loanId": None,
-            "reason": row.get("motivo"),
-            "status": "Activa" if row.get("activa") else "Levantada",
-            "severity": None,
-            "notes": row.get("motivo"),
+            "reason": row.get("reason"),
+            "status": "Active" if row.get("active") else "Resolved",
+            "severity": row.get("severity"),
+            "notes": row.get("reason"),
             "createdAt": (
-                row.get("fecha_inicio").isoformat() if row.get("fecha_inicio") else None
+                row.get("start_date").isoformat() if row.get("start_date") else None
             ),
             "resolvedAt": (
-                row.get("fecha_fin").isoformat() if row.get("fecha_fin") else None
+                row.get("end_date").isoformat() if row.get("end_date") else None
             ),
         }
 

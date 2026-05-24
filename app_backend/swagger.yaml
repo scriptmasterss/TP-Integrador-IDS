@@ -779,7 +779,7 @@ components:
           type: string
         role:
           type: string
-          enum: [alumno, docente, bibliotecario, admin]
+          enum: [student, teacher, librarian, admin]
         user:
           $ref: '#/components/schemas/UserPerfil'
 
@@ -789,17 +789,17 @@ components:
         id:
           type: integer
           format: int64
-        nombre:
+        name:
           type: string
-        mail:
+        email:
           type: string
           format: email
         score:
           type: integer
-        rol:
+        role:
           type: string
-          enum: [alumno, docente, bibliotecario, admin]
-        carrera:
+          enum: [student, teacher, librarian, admin]
+        major:
           type: string
           nullable: true
 
@@ -809,36 +809,36 @@ components:
         id:
           type: integer
           format: int64
-        nombre:
+        name:
           type: string
-        mail:
+        email:
           type: string
           format: email
         score:
           type: integer
-        rol:
+        role:
           type: string
-          enum: [alumno, docente, bibliotecario, admin]
-        carrera:
+          enum: [student, teacher, librarian, admin]
+        major:
           type: string
           nullable: true
 
     UserCreate:
       type: object
       required:
-        - nombre
-        - mail
-        - rol
+        - name
+        - email
+        - role
       properties:
-        nombre:
+        name:
           type: string
-        mail:
+        email:
           type: string
           format: email
-        rol:
+        role:
           type: string
-          enum: [alumno, docente, bibliotecario, admin]
-        carrera:
+          enum: [student, teacher, librarian, admin]
+        major:
           type: string
         score:
           type: integer
@@ -846,15 +846,15 @@ components:
     UserUpdate:
       type: object
       properties:
-        nombre:
+        name:
           type: string
-        mail:
+        email:
           type: string
           format: email
-        rol:
+        role:
           type: string
-          enum: [alumno, docente, bibliotecario, admin]
-        carrera:
+          enum: [student, teacher, librarian, admin]
+        major:
           type: string
         score:
           type: integer
@@ -862,9 +862,9 @@ components:
     UserStatusUpdate:
       type: object
       required:
-        - activa
+        - active
       properties:
-        activa:
+        active:
           type: boolean
 
     ItemDetail:
@@ -873,64 +873,64 @@ components:
         id:
           type: integer
           format: int64
-        nombre_art:
+        name:
           type: string
-        tipo:
+        type:
           type: string
-        seccion:
+        section:
           type: string
-        prestacion_maxima:
+        max_loan_duration:
           type: integer
         stock:
           type: integer
-        necesita_reparacion:
+        needs_repair:
           type: boolean
 
     ItemCreate:
       type: object
       required:
-        - nombre_art
-        - tipo
-        - seccion
-        - prestacion_maxima
+        - name
+        - type
+        - section
+        - max_loan_duration
       properties:
-        nombre_art:
+        name:
           type: string
-        tipo:
+        type:
           type: string
-        seccion:
+        section:
           type: string
-        prestacion_maxima:
+        max_loan_duration:
           type: integer
         stock:
           type: integer
-        necesita_reparacion:
+        needs_repair:
           type: boolean
 
     ItemUpdate:
       type: object
       properties:
-        nombre_art:
+        name:
           type: string
-        tipo:
+        type:
           type: string
-        seccion:
+        section:
           type: string
-        prestacion_maxima:
+        max_loan_duration:
           type: integer
         stock:
           type: integer
-        necesita_reparacion:
+        needs_repair:
           type: boolean
 
     ItemConditionUpdate:
       type: object
       required:
-        - necesita_reparacion
+        - needs_repair
       properties:
-        necesita_reparacion:
+        needs_repair:
           type: boolean
-        notas:
+        notes:
           type: string
 
     LoanDetail:
@@ -939,19 +939,19 @@ components:
         id:
           type: integer
           format: int64
-        id_usuario:
+        user_id:
           type: integer
           format: int64
-        id_reservado:
+        item_id:
           type: integer
           format: int64
-        estado_reserva:
+        status:
           type: string
-          enum: [pendiente, aprobado, entregado, devuelto, rechazado]
-        fecha_retiro:
+          enum: [pending, approved, delivered, returned, rejected]
+        pickup_date:
           type: string
           format: date-time
-        fecha_regreso:
+        return_date:
           type: string
           format: date-time
 
@@ -961,49 +961,49 @@ components:
         id:
           type: integer
           format: int64
-        id_reservado:
+        item_id:
           type: integer
           format: int64
-        nombre_articulo:
+        item_name:
           type: string
-        estado_reserva:
+        status:
           type: string
-        fecha_retiro:
+        pickup_date:
           type: string
           format: date-time
 
     LoanCreate:
       type: object
       required:
-        - id_usuario
-        - id_reservado
-        - fecha_retiro
-        - fecha_regreso
+        - user_id
+        - item_id
+        - pickup_date
+        - return_date
       properties:
-        id_usuario:
+        user_id:
           type: integer
           format: int64
-        id_reservado:
+        item_id:
           type: integer
           format: int64
-        fecha_retiro:
+        pickup_date:
           type: string
           format: date-time
-        fecha_regreso:
+        return_date:
           type: string
           format: date-time
-        estado_reserva:
+        status:
           type: string
-          enum: [pendiente, aprobado, entregado, devuelto, rechazado]
+          enum: [pending, approved, delivered, returned, rejected]
 
     LoanStatusUpdate:
       type: object
       required:
-        - estado_reserva
+        - status
       properties:
-        estado_reserva:
+        status:
           type: string
-          enum: [pendiente, aprobado, entregado, devuelto, rechazado]
+          enum: [pending, approved, delivered, returned, rejected]
 
     PenaltyDetail:
       type: object
@@ -1022,7 +1022,7 @@ components:
           type: string
         status:
           type: string
-          enum: [Activa, Levantada]
+          enum: [Active, Resolved]
         severity:
           type: string
         notes:
@@ -1066,10 +1066,10 @@ components:
       properties:
         status:
           type: string
-          enum: [Activa, Levantada]
+          enum: [Active, Resolved]
         severity:
           type: string
-          example: Alta
+          example: high
         notes:
           type: string
 
