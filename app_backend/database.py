@@ -5,7 +5,7 @@ import mysql.connector
 import config
 
 
-def obtener_conexion():
+def get_connection():
     try:
         connection = mysql.connector.connect(
             host=config.DB_HOST,
@@ -17,7 +17,7 @@ def obtener_conexion():
         return connection
 
     except mysql.connector.Error as err:
-        print(f"Error al conectar a la base de datos: {err}")
+        print(f"Error connecting to the database: {err}")
         return None
 
 
@@ -27,7 +27,7 @@ def init_database():
         print(f"SQL initialization file not found: {sql_file}")
         return
 
-    conn = obtener_conexion()
+    conn = get_connection()
     cursor = None
 
     if conn is None:

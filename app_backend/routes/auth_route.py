@@ -3,7 +3,7 @@ import jwt
 from flask import Blueprint, jsonify, request
 
 from config import JWT_ALGORITHM, JWT_SECRET
-from database import obtener_conexion
+from database import get_connection
 from http_codes_and_messages import (
     HTTP_BAD_REQUEST,
     HTTP_INTERNAL_SERVER_ERROR,
@@ -19,7 +19,7 @@ from validators import valid_login
 auth_bp = Blueprint("auth", __name__)
 
 
-def hashear_password(password):
+def hash_password(password):
     hash_bytes = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
     return hash_bytes.decode("utf-8")
@@ -33,7 +33,7 @@ def valid_password(password, password_hash):
         return False
 
 
-def generar_token(user_id, role):
+def generate_token(user_id, role):
     payload = {
         "user_id": user_id,
         "role": role,
@@ -42,7 +42,7 @@ def generar_token(user_id, role):
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def decodificar_token(token):
+def decode_token(token):
     try:
         return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM]), "Valid"
 
@@ -53,7 +53,7 @@ def decodificar_token(token):
         return None, "Invalid"
 
 
-def extraer_token_del_header():
+def extract_token_from_header():
     header = request.headers.get("Authorization", "")
 
     if not header.startswith("Bearer "):
@@ -62,16 +62,16 @@ def extraer_token_del_header():
     return header[len("Bearer ") :].strip(), "Ok"
 
 
-def requiere_auth(role):
-    def wrapperGenerator(route):
+def require_auth(role):
+    def wrapper_generator(route):
 
         def wrapper(*args, **kwargs):
-            token, tokenError = extraer_token_del_header()
+            token, tokenError = extract_token_from_header()
 
             if token is None:
                 return jsonify({"error": tokenError}), HTTP_UNAUTHORIZED
 
-            payload, payloadError = decodificar_token(token)
+            payload, payloadError = decode_token(token)
 
             if payload is None:
                 return jsonify({"error": payloadError}), HTTP_UNAUTHORIZED
@@ -83,7 +83,7 @@ def requiere_auth(role):
 
         return wrapper
 
-    return wrapperGenerator
+    return wrapper_generator
 
 
 @auth_bp.route("/api/auth/login", methods=["POST"])
@@ -102,7 +102,7 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    conn = obtener_conexion()
+    conn = get_connection()
     if conn is None:
         return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
 
@@ -140,7 +140,7 @@ def login():
             "major": user.get("major"),
         }
 
-        token = generar_token(user.get("id"), user.get("role"))
+        token = generate_token(user.get("id"), user.get("role"))
 
         return jsonify(
             {"token": token, "role": user.get("role"), "user": user_profile}

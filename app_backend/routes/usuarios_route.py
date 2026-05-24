@@ -1,7 +1,7 @@
 import mysql.connector
 from flask import Blueprint, jsonify, request
 
-from database import obtener_conexion
+from database import get_connection
 from http_codes_and_messages import (
     HTTP_BAD_REQUEST,
     HTTP_CONFLICT,
@@ -23,7 +23,7 @@ usuarios_bp = Blueprint("usuarios", __name__)
 @usuarios_bp.route("/api/users/<int:user_id>/loans", methods=["GET"])
 def get_user_loans(user_id):
 
-    conn = obtener_conexion()
+    conn = get_connection()
     if conn is None:
         return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
 
@@ -77,7 +77,7 @@ def get_user_loans(user_id):
 @usuarios_bp.route("/api/users", methods=["POST"])
 def create_user():
 
-    conn = obtener_conexion()
+    conn = get_connection()
     if conn is None:
         return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
 
@@ -150,7 +150,7 @@ def create_user():
 @usuarios_bp.route("/api/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
 
-    conn = obtener_conexion()
+    conn = get_connection()
     if conn is None:
         return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
 

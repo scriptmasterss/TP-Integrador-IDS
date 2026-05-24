@@ -3,7 +3,7 @@ import traceback
 import mysql.connector
 from flask import Blueprint, jsonify, request
 
-from database import obtener_conexion
+from database import get_connection
 from http_codes_and_messages import (
     HTTP_BAD_REQUEST,
     HTTP_INTERNAL_SERVER_ERROR,
@@ -22,7 +22,7 @@ penalties_bp = Blueprint("penalties", __name__)
 @penalties_bp.route("/api/penalties/<int:penalty_id>", methods=["PATCH"])
 def patch_penalty(penalty_id):
 
-    conn = obtener_conexion()
+    conn = get_connection()
     if conn is None:
         return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
 
