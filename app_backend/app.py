@@ -8,14 +8,14 @@ from database import init_database
 from routes.auth_route import auth_bp
 from routes.penalties_route import penalties_bp
 from routes.ping import ping_bp
-from routes.usuarios_route import usuarios_bp
+from routes.users_route import users_bp
 
 app = Flask(__name__)
 
 init_database()
 
 app.register_blueprint(ping_bp)
-app.register_blueprint(usuarios_bp)
+app.register_blueprint(users_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(penalties_bp)
 

@@ -17,10 +17,10 @@ from http_codes_and_messages import (
 )
 from validators import valid_id, valid_user, valid_user_update
 
-usuarios_bp = Blueprint("usuarios", __name__)
+users_bp = Blueprint("users", __name__)
 
 
-@usuarios_bp.route("/api/users/<int:user_id>/loans", methods=["GET"])
+@users_bp.route("/api/users/<int:user_id>/loans", methods=["GET"])
 def get_user_loans(user_id):
 
     conn = get_connection()
@@ -74,7 +74,7 @@ def get_user_loans(user_id):
             pass
 
 
-@usuarios_bp.route("/api/users", methods=["POST"])
+@users_bp.route("/api/users", methods=["POST"])
 def create_user():
 
     conn = get_connection()
@@ -147,7 +147,7 @@ def create_user():
             pass
 
 
-@usuarios_bp.route("/api/users/<int:user_id>", methods=["PUT"])
+@users_bp.route("/api/users/<int:user_id>", methods=["PUT"])
 def update_user(user_id):
 
     conn = get_connection()
