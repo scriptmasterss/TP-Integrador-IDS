@@ -1,15 +1,15 @@
 openapi: 3.0.3
 info:
-  title: API de Gestión de Inventario, Préstamos y Penalizaciones
+  title: Inventory, Loans and Penalties Management API
   description: >
-    Esta API maneja la autenticación de usuarios, administración de perfiles, 
-    control centralizado de stock (materiales, herramientas, placas, libros), 
-    flujo de préstamos/reservas mediante validación por QR, gestión de penalizaciones 
-    y generación de reportes/estadísticas.
+    This API handles user authentication, profile management,
+    centralized stock control (materials, tools, boards, books),
+    loans/reservations workflow via QR validation, penalty management,
+    and report/statistics generation.
   version: 2.0.0
 servers:
   - url: /api
-    description: Servidor Base Local
+    description: Local Base Server
 
 paths:
   # ==========================================
@@ -18,9 +18,9 @@ paths:
   /auth/login:
     post:
       tags:
-        - Autenticación
-      summary: Inicia sesión utilizando flask-login
-      description: Valida credenciales y establece la sesión indicando el rol (alumno/docente, bibliotecario/admin).
+        - Authentication
+      summary: Login using flask-login
+      description: Validates credentials and establishes the session indicating the role (student/teacher, librarian/admin).
       requestBody:
         required: true
         content:
@@ -29,15 +29,15 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Autenticación exitosa. Devuelve el rol y los datos de perfil.
+          description: Successful authentication. Returns role and profile data.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
         '401':
-          description: Credenciales inválidas.
+          description: Invalid credentials.
         '400':
-          description: Datos de entrada incorrectos.
+          description: Bad request.
 
   /auth/logout:
     post:

@@ -20,4 +20,4 @@ MSG_CONFLICT = "Conflict"
 MSG_INTERNAL_SERVER_ERROR = "Internal Server Error"
 
 
-MSG_DB_CONNECTION_FAILED = "No se pudo conectar a la base de datos"
+MSG_DB_CONNECTION_FAILED = "Could not connect to the database"
