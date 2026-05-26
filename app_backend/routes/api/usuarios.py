@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from constants import HTTP_OK, HTTP_NOT_FOUND, HTTP_BAD_REQUEST
-from db import obtener_conexion
+from database import obtener_conexion
 
 blueprint_usuarios = Blueprint("usuarios", __name__)
 
