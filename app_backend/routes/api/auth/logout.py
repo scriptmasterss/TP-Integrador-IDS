@@ -2,7 +2,7 @@ import mysql.connector
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required
 from constants import HTTP_OK
-from db import obtener_conexion
+from database import obtener_conexion
 
 blueprint_logout = Blueprint("auth", __name__)
 
