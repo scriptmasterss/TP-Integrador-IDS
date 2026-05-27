@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nombre VARCHAR(50) NOT NULL,
     mail VARCHAR(50) UNIQUE NOT NULL,
     score INT DEFAULT 0
+    estado_usuario VARCHAR(20) NOT NULL DEFAULT 'activo',
 );
 
 CREATE TABLE IF NOT EXISTS articulos (
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS reserva (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_reservado INT NOT NULL,
-    estado_reserva VARCHAR(20) NOT NULL DEFAULT pendiente,
+    estado_reserva VARCHAR(20) NOT NULL DEFAULT 'pendiente',
     fecha_retiro DATETIME NOT NULL,
     fecha_regreso DATETIME NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id),
