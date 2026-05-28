@@ -37,7 +37,7 @@ def generar_qr(datos):
 # post: devuelve un string JSON con los datos de la reserva sin información sensible.
 def construir_contenido_qr(reserva):
     datos_qr = {
-        "id_reserva": reserva["id_reserva"],
+        "id_reserva": reserva["id"],
         "id_articulo": reserva["id_reservado"],
         "fecha_retiro": str(reserva["fecha_retiro"]),
         "fecha_regreso": str(reserva["fecha_regreso"]),
@@ -50,7 +50,7 @@ def construir_contenido_qr(reserva):
 def obtener_reserva_por_id(id_reserva):
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
+    cursor.execute("SELECT * FROM reserva WHERE id = %s", (id_reserva,))
     reserva = cursor.fetchone()
     cursor.close()
     conexion.close()

@@ -10,6 +10,8 @@ dependencies = [
     "flask-swagger-ui>=3.0.3",
     "bcrypt>=5.0.0",
     "pyjwt>=2.13.0",
+    "qrcode>=8.0",
+    "pillow>=11.0",
 ]
 
 [tool.ruff]
