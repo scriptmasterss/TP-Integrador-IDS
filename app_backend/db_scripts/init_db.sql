@@ -1,13 +1,12 @@
-CREATE DATABASE IF NOT EXISTS tp_integrador_ids;
-USE tp_integrador_ids;
-
 CREATE TABLE IF NOT EXISTS usuario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     mail VARCHAR(50) UNIQUE NOT NULL,
     score INT DEFAULT 0,
-    rol VARCHAR(20) DEFAULT 'alumno',
-    carrera VARCHAR(50)
+    rol enum('alumno', 'profesor', 'bibliotecario', 'admin') NOT NULL DEFAULT 'alumno',
+    carrera VARCHAR(50),
+    password_hash VARCHAR(255) DEFAULT '',
+    activo BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS articulos (
@@ -42,11 +41,14 @@ CREATE TABLE IF NOT EXISTS estado_devuelto (
 CREATE TABLE IF NOT EXISTS penalizacion (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
+    id_reserva INT,
     motivo VARCHAR(255),
     fecha_inicio DATETIME,
     fecha_fin DATETIME,
     activa BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+    severity enum('baja', 'media', 'alta') NOT NULL DEFAULT 'media',
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id),
+    FOREIGN KEY (id_reserva) REFERENCES reserva(id)
 );
 
 CREATE TABLE IF NOT EXISTS qr (
