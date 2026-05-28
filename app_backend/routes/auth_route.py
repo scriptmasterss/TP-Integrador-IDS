@@ -163,9 +163,17 @@ def login():
             pass
 
 
-# pre:  mail es un string con formato de email válido.
-# post: devuelve un diccionario con los datos del usuario si existe, None si no se encuentra.
+
 def buscar_usuario_por_mail(mail):
+   """Busca un usuario en la base de datos por su mail.
+
+    Args:
+        mail (str): String con formato de email válido.
+
+    Returns:
+        dict: Diccionario con los datos del usuario si existe, None si no se encuentra.
+    """
+
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute(
@@ -178,8 +186,14 @@ def buscar_usuario_por_mail(mail):
     return usuario
 
 
-# pre:  el request incluye un JWT válido en el header Authorization.
-# post: devuelve 200 confirmando el cierre de sesión. El cliente debe descartar el token.
 @auth_bp.route("/auth/logout", methods=["POST"])
 def logout():
+   """Cierra la sesión del usuario autenticado.
+
+    El request debe incluir un JWT válido en el header Authorization.
+    El cliente debe descartar el token al recibir la respuesta.
+
+    Returns:
+        tuple: JSON con mensaje de confirmación y código 200.
+    """
     return jsonify({"mensaje": "Sesión cerrada con éxito"}), HTTP_OK

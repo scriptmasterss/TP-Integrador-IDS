@@ -20,10 +20,17 @@ from validators import valid_id, valid_user, valid_user_update
 users_bp = Blueprint("users", __name__)
 
 
-# pre:  id_usuario es un entero positivo.
-# post: marca el usuario como inactivo, retorna True si se actualizó, False si no existía.
 def desactivar_usuario_db(id_usuario):
-    conexion = obtener_conexion()
+    """Marca un usuario como inactivo en la base de datos.
+
+    Args:
+        id_usuario (int): Entero positivo con el id del usuario a desactivar.
+
+    Returns:
+        bool: True si se actualizó correctamente, False si el usuario no existía.
+    """
+ 
+   conexion = obtener_conexion()
     cursor = conexion.cursor()
     cursor.execute("UPDATE usuario SET activo = FALSE WHERE id = %s", (id_usuario,))
     conexion.commit()
@@ -232,10 +239,20 @@ def update_user(user_id):
             pass
 
 
-# pre:  el request incluye un JWT válido con rol admin. id_usuario es un entero positivo.
-# post: devuelve 200 si se dio de baja, 404 si no existe, 400 si el ID es inválido.
 @users_bp.route("/api/usuarios/<int:id_usuario>", methods=["DELETE"])
 def eliminar_usuario(id_usuario):
+    """Da de baja lógica a un usuario por su id.
+
+    El request debe incluir un JWT válido con rol admin en el header Authorization.
+
+    Args:
+        id_usuario (int): Entero positivo con el id del usuario a dar de baja.
+
+    Returns:
+        tuple: JSON con mensaje de éxito y código 200,
+               404 si el usuario no existe, 400 si el ID es inválido.
+    """
+
     if id_usuario <= 0:
         return jsonify({"error": "ID inválido"}), HTTP_BAD_REQUEST
 
