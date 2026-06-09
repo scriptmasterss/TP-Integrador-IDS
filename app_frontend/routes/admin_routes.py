@@ -130,6 +130,18 @@ def guardar_articulo():
         url_for("admin.crear_articulo", exito="Artículo creado correctamente")
     )
 
+@admin_bp.route("/articulos/<int:id>/eliminar", methods=["POST"])
+def eliminar_articulo_route(id):
+    """Elimina un artículo."""
+    token = session.get("token")
+    if not token:
+        return redirect(url_for("public.login"))
+        
+    from servicios.articulos_servicio import eliminar_articulo
+    eliminar_articulo(id, token=token)
+    return redirect(url_for("admin.listar_articulos"))
+
+
 
 @admin_bp.route("/dashboard")
 def dashboard():

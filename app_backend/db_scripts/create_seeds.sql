@@ -1,4 +1,5 @@
 USE sistema_prestamos;
+SET NAMES utf8mb4;
 
 -- ==============================================================================
 -- 0. PREPARACIÓN (Limpieza de tablas y reseteo de AUTO_INCREMENT)
@@ -1763,3 +1764,4 @@ VALUES
     'Las herramientas mecánicas (taladros, amoladoras) deben devolverse libres de polvo y viruta metálica.',
     DATE_SUB(NOW(), INTERVAL 310 DAY)
   );
+
