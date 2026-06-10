@@ -114,6 +114,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   attachSimpleFormValidations();
 
+  const attachTicketActions = () => {
+    const printButtons = document.querySelectorAll("[data-ticket-print], [data-ticket-pdf]");
+
+    printButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const originalTitle = document.title;
+        const ticketFileName = button.dataset.ticketFileName;
+        if (ticketFileName) {
+          document.title = ticketFileName;
+        }
+        window.print();
+        window.setTimeout(() => {
+          document.title = originalTitle;
+        }, 1000);
+      });
+    });
+  };
+
+  attachTicketActions();
+
   const faqItems = document.querySelectorAll(".faq-item");
 
   faqItems.forEach((item) => {
