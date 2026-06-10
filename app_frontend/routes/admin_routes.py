@@ -3,7 +3,7 @@
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from servicios import articulos_servicio
-from servicios.api_client import get_json, obtener_detalle_reserva, post_json
+from servicios.api_client import get_json, obtener_detalle_reserva, post_json, put_json, patch_json
 from servicios.normativas_servicio import (
     actualizar_normativa,
     crear_normativa,
@@ -15,9 +15,6 @@ from servicios.articulos_servicio import eliminar_articulo
 from servicios.usuario_servicio import obtener_usuarios, actualizar_usuario
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
-
-
-
 
 
 @admin_bp.route("/reservas/<int:id>", methods=["GET", "POST"])
@@ -39,9 +36,7 @@ def reserva_detalle(id):
             "id": datos_api.get("id", id),
             "estado_general": datos_api.get("estado_reserva", "pendiente"),
             "estado_texto": datos_api.get("estado_reserva", "Pendiente"),
-            "estado_clase": "status-pending"
-            if datos_api.get("estado_reserva") == "pendiente"
-            else "status-active",
+            "estado_clase": "status-pending" if datos_api.get("estado_reserva") == "pendiente" else "status-active",
             "equipo_nombre": datos_api.get("nombre_art", "Material no especificado"),
             "equipo_id": datos_api.get("id_reservado", "N/A"),
             "titular_nombre": datos_api.get("nombre", "Alumno"),
@@ -128,9 +123,8 @@ def guardar_articulo():
     if error:
         return redirect(url_for("admin.crear_articulo", error=error))
 
-    return redirect(
-        url_for("admin.crear_articulo", exito="Artículo creado correctamente")
-    )
+    return redirect(url_for("admin.crear_articulo", exito="Artículo creado correctamente"))
+
 
 @admin_bp.route("/articulos/<int:id>/eliminar", methods=["POST"])
 def eliminar_articulo_route(id):
@@ -315,8 +309,7 @@ def reporte_morosidad():
                 {
                     "usuario": penalty.get("id_usuario") or penalty.get("usuarioId"),
                     "articulo": penalty.get("id_reserva") or penalty.get("reservaId"),
-                    "vencimiento": penalty.get("fecha_fin")
-                    or penalty.get("resolvedAt"),
+                    "vencimiento": penalty.get("fecha_fin") or penalty.get("resolvedAt"),
                     "estado": "Activa" if penalty.get("activa", True) else "Levantada",
                 }
             )
@@ -326,15 +319,18 @@ def reporte_morosidad():
 
 @admin_bp.route("/articulos/<int:id>/editar", methods=["GET", "POST"])
 def editar_articulo(id):
-    """Formulario de edición de artículo: muestra datos y permite actualizarlos."""
+    """Formulario de edición de artículo."""
     token = session.get("token")
     rol = session.get("rol")
+
     if not token:
         return redirect(url_for("public.login"))
+
     if rol not in ["admin", "bibliotecario"]:
         return redirect(url_for("public.home"))
 
     if request.method == "POST":
+
         raw_stock = request.form.get("stock", "0")
         stock = int(raw_stock) if raw_stock.isdigit() else 0
 
@@ -343,22 +339,39 @@ def editar_articulo(id):
             "tipo": request.form.get("tipo"),
             "seccion": request.form.get("seccion"),
             "stock": stock,
-            "necesita_reparacion": request.form.get("necesita_reparacion") == "on",
+            "necesita_reparacion": (request.form.get("necesita_reparacion") == "on"),
         }
 
-        _, error = post_json(
-            f"/articulos/{id}/update", data=datos_actualizados, token=token
+        datos_actualizados = {k: v for k, v in datos_actualizados.items() if v is not None}
+
+        respuesta, error, status = put_json(
+            f"/articulos/{id}",
+            datos_actualizados,
+            token=token,
         )
 
+        print("STATUS:", status)
+        print("ERROR:", error)
+        print("DATA:", datos_actualizados)
+        print("RESPUESTA:", respuesta)
+
         if error:
-            return render_template("admin/editar_articulo.html", fetch_error=error)
+            articulo = {"id": id, **datos_actualizados}
+
+            return render_template(
+                "admin/editar_articulo.html",
+                articulo=articulo,
+                fetch_error=error,
+            )
 
         return redirect(url_for("admin.listar_articulos"))
 
     articulo, error = get_json(f"/articulos/{id}", token=token)
 
     return render_template(
-        "admin/editar_articulo.html", articulo=articulo, fetch_error=error
+        "admin/editar_articulo.html",
+        articulo=articulo,
+        fetch_error=error,
     )
 
 
@@ -377,26 +390,34 @@ def lista_reservas():
     fecha = request.args.get("fecha")
 
     lista_filtros = []
-
-    if estado:
+    if estado and estado != "Todos":
         lista_filtros.append(f"estado={estado}")
-    if usuario:
+    if usuario and usuario.strip():
         lista_filtros.append(f"usuario={usuario}")
-    if fecha:
+    if fecha and fecha.strip():
         lista_filtros.append(f"fecha={fecha}")
 
-    query_params = ""
-    if lista_filtros:
-        query_params = "?" + "&".join(lista_filtros)
-
+    query_params = "?" + "&".join(lista_filtros) if lista_filtros else ""
     url_final = f"/reservas{query_params}"
-    reservas, error = get_json(url_final, token=token)
 
-    return render_template(
-        "admin/reservas.html",
-        reservas=reservas or [],
-        fetch_error=error,
-    )
+    reservas_raw, error = get_json(url_final, token=token)
+
+    reservas_procesadas = []
+    if isinstance(reservas_raw, list):
+        for p in reservas_raw:
+            print("DEBUG RESERVA:", p)
+
+            reservas_procesadas.append(
+                {
+                    "id": p.get("id"),
+                    "usuario_nombre": p.get("nombre_usuario") or p.get("id_usuario", "N/A"),
+                    "nombre_art": p.get("nombre_art", "N/A"),
+                    "estado_reserva": p.get("estado_reserva", "Pendiente"),
+                    "fecha": p.get("fecha_retiro", "N/A"),
+                }
+            )
+
+    return render_template("admin/reservas.html", reservas=reservas_procesadas, fetch_error=error)
 
 
 @admin_bp.route("/penalizaciones", methods=["GET"])
@@ -418,7 +439,13 @@ def listar_penalizaciones():
             lista_penalizaciones.append(
                 {
                     "id": p.get("id"),
-                    "usuario_nombre": p.get("nombre_usuario", "Desconocido"),
+                    "usuario_nombre": (
+                        p.get("nombre_usuario")
+                        or p.get("usuario")
+                        or p.get("email_usuario")
+                        or p.get("id_usuario")
+                        or "Desconocido"
+                    ),
                     "severidad": p.get("severidad", "Media"),
                     "fecha_inicio": p.get("fecha_inicio", "N/A"),
                     "activa": p.get("activa", True),
@@ -434,13 +461,20 @@ def listar_penalizaciones():
 
 @admin_bp.route("/penalizaciones/<int:id>/levantar", methods=["POST"])
 def levantar_penalizacion(id):
-    """Acción para levantar una penalización manualmente."""
+    """Levanta (desactiva) una penalización."""
     token = session.get("token")
     rol = session.get("rol")
+
     if not token:
         return redirect(url_for("public.login"))
     if rol not in ["admin", "bibliotecario"]:
         return redirect(url_for("public.home"))
 
-    post_json(f"/penalizaciones/{id}/resolve", {}, token=token)
+    payload = {"status": "Levantada"}
+
+    response, error, status = patch_json(f"/penalizaciones/{id}", payload, token=token)
+
+    if error:
+        print("ERROR levantando penalización:", error, "STATUS:", status)
+
     return redirect(url_for("admin.listar_penalizaciones"))

@@ -9,6 +9,11 @@
     <a href="{{ url_for('alumno.perfil') }}"><i class="fa-solid fa-user"></i> Perfil</a>
   </li>
   <li>
+    <a href="{{ url_for('alumno.dashboard') }}" class="active">
+        <i class="fa-solid fa-gauge"></i> Dashboard
+    </a>
+  </li> 
+  <li>
     <a href="{{ url_for('alumno.historial') }}"
       ><i class="fa-solid fa-list-check"></i> Mis reservas</a
     >
@@ -39,7 +44,7 @@
     </div>
 
     <div class="card p-3">
-      <h4>Score</h4>
+      <h4>Puntaje</h4>
       <p>{{ dashboard.puntaje if dashboard.puntaje is defined else 'N/A' }}</p>
     </div>
 

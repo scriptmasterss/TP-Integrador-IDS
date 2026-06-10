@@ -16,9 +16,6 @@ logger = logging.getLogger(__name__)
 alumno_bp = Blueprint("alumno", __name__, url_prefix="/alumno")
 
 
-
-
-
 @alumno_bp.route("/perfil")
 def perfil():
     """Renderiza la página de perfil del alumno."""
@@ -32,6 +29,7 @@ def perfil():
 
     try:
         from servicios.auth_servicio import obtener_mi_perfil
+
         perfil_fresco = obtener_mi_perfil(token=token)
         if perfil_fresco and "usuario" in perfil_fresco:
             usuario = perfil_fresco["usuario"]
@@ -40,20 +38,22 @@ def perfil():
 
     return render_template("alumno/perfil.html", usuario=usuario, mensaje=mensaje)
 
+
 @alumno_bp.route("/cambiar_contrasena", methods=["POST"])
 def cambiar_contrasena():
     token = session.get("token")
     usuario = session.get("usuario")
     if not token or not usuario:
         return redirect(url_for("public.login"))
-        
+
     nueva_contrasena = request.form.get("nueva_contrasena")
     usuario_id = usuario.get("id")
-    
+
     from servicios.usuario_servicio import actualizar_usuario
+
     # Se actualiza enviando el campo contrasenia
     actualizar_usuario(usuario_id, {"contrasenia": nueva_contrasena}, token=token)
-    
+
     return redirect(url_for("alumno.perfil", mensaje="Contraseña actualizada exitosamente"))
 
 
@@ -79,17 +79,12 @@ def historial():
                     "sede": reserva.get("seccion", "Sede FIUBA"),
                     "estado_texto": reserva.get("estado_reserva", "Pendiente"),
                     "estado_clase": (
-                        "badge-warning"
-                        if reserva.get("estado_reserva") == "pendiente"
-                        else "badge-success"
+                        "badge-warning" if reserva.get("estado_reserva") == "pendiente" else "badge-success"
                     ),
                 }
             )
 
-
-    return render_template(
-        "alumno/historial.html", historial=historial_datos, fetch_error=error
-    )
+    return render_template("alumno/historial.html", historial=historial_datos, fetch_error=error)
 
 
 @alumno_bp.route("/mis-reservas/nueva", methods=["GET", "POST"])
@@ -173,7 +168,7 @@ def comprobante_sin_id():
     usuario = session.get("usuario")
     if not token or not usuario:
         return redirect(url_for("public.login"))
-        
+
     reserva = {
         "id": "-",
         "estado_texto": "No seleccionado",
@@ -200,19 +195,43 @@ def comprobante_sin_id():
 
 @alumno_bp.route("/dashboard")
 def dashboard():
-    """Panel principal: reservas activas, puntaje, alertas de penalización."""
     token = session.get("token")
     usuario = session.get("usuario")
     if not token or not usuario:
         return redirect(url_for("public.login"))
 
-    dashboard_data, error = get_json(
-        f"/alumno/dashboard/{usuario.get('id')}", token=token
+    usuario_id = usuario.get("id")
+
+    reservas_payload, error_res = get_json(f"/usuarios/{usuario_id}/reservas", token=token)
+    usuario_payload, error_user = get_json(f"/usuarios/{usuario_id}", token=token)
+    penalizaciones, error_pen = get_json(
+        f"/usuarios/{usuario_id}/penalizaciones",
+        token=token,
     )
 
-    return render_template(
-        "alumno/dashboard.html", dashboard=dashboard_data or {}, fetch_error=error
+    print(
+        f"DEBUG_DASHBOARD_VARS: usuario_id={usuario_id}, error_res={error_res}, error_user={error_user}, error_pen={error_pen}"
     )
+
+    if error_res == 401 or error_user == 401 or error_pen == 401:
+        session.clear()
+        return redirect(url_for("public.login"))
+
+    reservas_activas = (
+        [r for r in reservas_payload if r.get("estado_reserva") == "pendiente"]
+        if isinstance(reservas_payload, list)
+        else []
+    )
+    puntaje = usuario_payload.get("puntaje") if isinstance(usuario_payload, dict) else "N/A"
+    penalizaciones_activas = [p for p in penalizaciones if p.get("activa")]
+
+    dashboard_data = {
+        "reservas_activas": reservas_activas,
+        "puntaje": puntaje,
+        "penalizaciones": penalizaciones_activas,
+    }
+
+    return render_template("alumno/dashboard.html", dashboard=dashboard_data)
 
 
 @alumno_bp.route("/reservas/<int:id>", methods=["GET"])
@@ -226,9 +245,7 @@ def reserva_detalle(id):
     datos_api, error = get_json(f"/reservas/{id}", token=token)
 
     if error:
-        return render_template(
-            "alumno/reserva_detalle_alumno.html", reserva=None, fetch_error=error
-        )
+        return render_template("alumno/reserva_detalle_alumno.html", reserva=None, fetch_error=error)
 
     reserva = {
         "id": datos_api.get("id"),
@@ -240,6 +257,7 @@ def reserva_detalle(id):
 
     return render_template("alumno/reserva_detalle_alumno.html", reserva=reserva)
 
+
 @alumno_bp.route("/penalizaciones")
 def alumno_penalizaciones():
     """Renderiza la página de penalizaciones del alumno."""
@@ -247,11 +265,7 @@ def alumno_penalizaciones():
     usuario = session.get("usuario")
     if not token or not usuario:
         return redirect(url_for("public.login"))
-    
+
     penalizaciones = obtener_penalizaciones_usuario(usuario.get("id"), token=token)
 
-    return render_template(
-        "alumno/penalizaciones.html",
-        usuario=usuario,
-        penalizaciones=penalizaciones
-    )
+    return render_template("alumno/penalizaciones.html", usuario=usuario, penalizaciones=penalizaciones)

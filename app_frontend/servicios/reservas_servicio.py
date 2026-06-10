@@ -51,3 +51,15 @@ def establecer_estado_reserva(reserva_id, status_data):
 def obtener_qr_reserva(id_reserva):
     """Descripción: función obtener_qr_reserva."""
     return get_json(f"/qr/reservas/{id_reserva}")
+
+
+def obtener_qr_reserva_segura(id_reserva):
+    """GET /qr/reservas/{id}
+    Versión segura con manejo de error consistente.
+    """
+    payload, error = get_json(f"/qr/reservas/{id_reserva}")
+
+    if error:
+        return {}
+
+    return payload or {}

@@ -16,16 +16,8 @@ reportes_bp = Blueprint("reportes", __name__)
 
 
 def obtener_reporte_db(tipo_reporte):
-    """Obtiene los datos del reporte solicitado desde la base de datos.
+    """Obtiene los datos del reporte solicitado desde la base de datos."""
 
-    Args:
-        tipo_reporte (str): El tipo de reporte a obtener
-            ('pending', 'returned', 'overdue', 'all', 'careers').
-
-    Returns:
-        list[dict]: Lista de diccionarios con los datos obtenidos de la BD.
-
-    """
     conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
@@ -46,7 +38,7 @@ def obtener_reporte_db(tipo_reporte):
             JOIN articulos
                 ON reserva.id_reservado = articulos.id
             WHERE estado_devuelto.dias_retraso > 0
-            """)
+        """)
 
     elif tipo_reporte == "pending":
         cursor.execute("""
@@ -61,7 +53,7 @@ def obtener_reporte_db(tipo_reporte):
             JOIN articulos
                 ON reserva.id_reservado = articulos.id
             WHERE reserva.estado_reserva = 'pendiente'
-            """)
+        """)
 
     elif tipo_reporte == "returned":
         cursor.execute("""
@@ -76,7 +68,7 @@ def obtener_reporte_db(tipo_reporte):
             JOIN articulos
                 ON reserva.id_reservado = articulos.id
             WHERE reserva.estado_reserva = 'devuelto'
-            """)
+        """)
 
     elif tipo_reporte == "all":
         cursor.execute("""
@@ -90,7 +82,7 @@ def obtener_reporte_db(tipo_reporte):
                 ON reserva.id_usuario = usuario.id
             JOIN articulos
                 ON reserva.id_reservado = articulos.id
-            """)
+        """)
 
     elif tipo_reporte == "careers":
         cursor.execute("""
@@ -134,7 +126,7 @@ def obtener_reportes():
     respuesta = {
         "tipo_reporte": tipo,
         "formato_solicitado": formato,
-        "datos": reporte_datos,
+        "data": reporte_datos,
     }
 
     return jsonify(respuesta), HTTP_OK

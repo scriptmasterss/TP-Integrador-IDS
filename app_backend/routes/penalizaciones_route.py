@@ -110,15 +110,12 @@ def format_penalty(row):
         "usuarioId": row.get("id_usuario"),
         "reservaId": row.get("id_reserva"),
         "reason": row.get("motivo"),
+        "activa": bool(row.get("activa")),
         "status": "Activa" if row.get("activa") else "Levantada",
         "severidad": row.get("severidad"),
         "notes": row.get("motivo"),
-        "createdAt": (
-            row.get("fecha_inicio").isoformat() if row.get("fecha_inicio") else None
-        ),
-        "resolvedAt": (
-            row.get("fecha_fin").isoformat() if row.get("fecha_fin") else None
-        ),
+        "createdAt": (row.get("fecha_inicio").isoformat() if row.get("fecha_inicio") else None),
+        "resolvedAt": (row.get("fecha_fin").isoformat() if row.get("fecha_fin") else None),
     }
 
 
@@ -246,7 +243,7 @@ def patch_penalty(penalty_id):
         return jsonify({"error": MSG_BAD_REQUEST, "detail": error}), HTTP_BAD_REQUEST
 
     if "status" in data:
-        data.update({"activa": 1 if data.get("status") == "Activa" else 0})
+        data.update({"activa": data.get("status") == "Activa"})
         data.pop("status")
 
     if "notes" in data:
@@ -379,9 +376,7 @@ def get_usuario_penalizaciones():
     """
     is_valid, error, usuario_id = valid_usuario_id_query(request.args)
     if not is_valid:
-        return jsonify(
-            {"error": "Invalid query params", "detail": error}
-        ), HTTP_BAD_REQUEST
+        return jsonify({"error": "Invalid query params", "detail": error}), HTTP_BAD_REQUEST
 
     conn = obtener_conexion()
     if conn is None:
@@ -396,9 +391,7 @@ def get_usuario_penalizaciones():
         usuario_exists = cursor.fetchone()
 
         if not usuario_exists:
-            return jsonify(
-                {"error": f"User with ID {usuario_id} not found"}
-            ), HTTP_NOT_FOUND
+            return jsonify({"error": f"User with ID {usuario_id} not found"}), HTTP_NOT_FOUND
 
         penalizaciones_query = "SELECT * FROM penalizacion WHERE id_usuario = %s"
         cursor.execute(penalizaciones_query, (usuario_id,))
@@ -409,9 +402,7 @@ def get_usuario_penalizaciones():
     except mysql.connector.Error as query_err:
         logging.error(f"Database query execution error: {query_err}")
 
-        return jsonify(
-            {"error": "Internal server error: Database query failed"}
-        ), HTTP_INTERNAL_SERVER_ERROR
+        return jsonify({"error": "Internal server error: Database query failed"}), HTTP_INTERNAL_SERVER_ERROR
 
     finally:
         try:
@@ -422,4 +413,108 @@ def get_usuario_penalizaciones():
         try:
             conn.close()
         except Exception:
+            pass
+
+
+@penalizaciones_bp.route(
+    "/api/usuarios/<int:usuario_id>/penalizaciones",
+    methods=["GET"],
+)
+def get_penalizaciones_usuario_dashboard(usuario_id):
+    """Obtiene las penalizaciones activas de un usuario."""
+
+    conn = obtener_conexion()
+
+    if conn is None:
+        return (
+            jsonify({"error": MSG_DB_CONNECTION_FAILED}),
+            HTTP_INTERNAL_SERVER_ERROR,
+        )
+
+    cursor = None
+
+    try:
+
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            "SELECT id FROM usuario WHERE id = %s",
+            (usuario_id,),
+        )
+
+        if cursor.fetchone() is None:
+
+            return (
+                jsonify({"message": MSG_NOT_FOUND}),
+                HTTP_NOT_FOUND,
+            )
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM penalizacion
+            WHERE id_usuario = %s
+            AND activa = TRUE
+            """,
+            (usuario_id,),
+        )
+
+        penalizaciones = cursor.fetchall()
+
+        return jsonify(penalizaciones), HTTP_OK
+
+    except Exception:
+
+        return (
+            jsonify({"error": MSG_INTERNAL_SERVER_ERROR}),
+            HTTP_INTERNAL_SERVER_ERROR,
+        )
+
+    finally:
+
+        try:
+            if cursor:
+                cursor.close()
+        except Exception:
+            pass
+
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
+@penalizaciones_bp.route("/api/penalizaciones/usuario/<int:usuario_id>", methods=["GET"])
+def get_penalizaciones_usuario(usuario_id):
+    conn = obtener_conexion()
+
+    if conn is None:
+        return jsonify({"error": MSG_DB_CONNECTION_FAILED}), HTTP_INTERNAL_SERVER_ERROR
+
+    cursor = None
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            "SELECT * FROM penalizacion WHERE id_usuario = %s",
+            (usuario_id,),
+        )
+
+        penalizaciones = cursor.fetchall()
+
+        return jsonify(penalizaciones), HTTP_OK
+
+    except Exception:
+        return jsonify({"error": MSG_INTERNAL_SERVER_ERROR}), HTTP_INTERNAL_SERVER_ERROR
+
+    finally:
+        try:
+            if cursor:
+                cursor.close()
+        except:
+            pass
+        try:
+            conn.close()
+        except:
             pass

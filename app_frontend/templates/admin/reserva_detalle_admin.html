@@ -43,6 +43,12 @@
       <i class="fa-solid fa-chart-column"></i> Morosidad
     </a>
   </li>
+  <li>
+    <a href="{{ url_for('admin.listar_penalizaciones') }}"
+      class="{% if request.endpoint == 'admin.listar_penalizaciones' %}active{% endif %}">
+      <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones
+    </a>
+  </li>
 {% endblock %}
 
 {% block dashboard_content %}
@@ -56,7 +62,7 @@
     class="admin-header-flex reveal delay-1">
     <div>
       <h2 class="admin-title">Detalle de Préstamo</h2>
-        class="ticket-status {{ reserva.estado_clase }} badge-lg">
+      <div class="ticket-status {{ reserva.estado_clase }} badge-lg">
         {{ reserva.estado_texto }}
       </div>
     </div>

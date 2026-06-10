@@ -476,7 +476,7 @@ def valid_penalty_patch(data):
     if not isinstance(data, dict):
         return False, "payload_must_be_object"
 
-    allowed = ["status", "severidad", "notes"]
+    allowed = ["status", "severidad", "notes", "activa"]
     if not any(k in data for k in allowed):
         return False, "no_updatable_fields"
 
@@ -487,6 +487,10 @@ def valid_penalty_patch(data):
             return False, "invalid_type:status tiene que ser un string"
         if data.get("status") not in ("Activa", "Levantada"):
             return False, "invalid_type:status tiene que ser 'Activa' o 'Levantada'"
+
+    if "activa" in data:
+        if not isinstance(data.get("activa"), bool):
+            return False, "invalid_type:activa"
 
     if "severidad" in data:
         if data.get("severidad") is None:

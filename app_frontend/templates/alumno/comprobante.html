@@ -9,6 +9,11 @@
     </a>
   </li>
   <li>
+    <a href="{{ url_for('alumno.dashboard') }}">
+      <i class="fa-solid fa-gauge"></i> Dashboard
+    </a>
+  </li>
+  <li>
     <a href="{{ url_for('alumno.historial') }}">
       <i class="fa-solid fa-list-check"></i> Mis reservas
     </a>
@@ -28,6 +33,7 @@
       <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones
     </a>
   </li>
+
 {% endblock %}
 
 {% block dashboard_content %}

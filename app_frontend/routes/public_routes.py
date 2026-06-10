@@ -75,9 +75,7 @@ def login_submit():
     email = (request.form.get("email") or "").strip()
     contrasenia = request.form.get("contrasenia") or ""
 
-    payload, error, status_code = post_json(
-        "/auth/login", {"email": email, "contrasenia": contrasenia}
-    )
+    payload, error, status_code = post_json("/auth/login", {"email": email, "contrasenia": contrasenia})
 
     if error:
         print(error)
@@ -92,21 +90,21 @@ def login_submit():
 
     rol = (payload or {}).get("rol", "alumno")
     usuario_data = (payload or {}).get("usuario", {})
-    
+
     estado_usr = str(usuario_data.get("estado", "")).lower()
     estado_pay = str((payload or {}).get("estado", "")).lower()
     activo_usr = usuario_data.get("activo")
     activo_pay = (payload or {}).get("activo")
     is_active = usuario_data.get("is_active") or (payload or {}).get("is_active")
-    
+
     cuenta_inactiva = (
-        estado_usr in ["inactivo", "suspendido", "baja", "false", "0"] or
-        estado_pay in ["inactivo", "suspendido", "baja", "false", "0"] or
-        activo_usr in [False, "False", "false", 0, "0"] or
-        activo_pay in [False, "False", "false", 0, "0"] or
-        is_active in [False, "False", "false", 0, "0"]
+        estado_usr in ["inactivo", "suspendido", "baja", "false", "0"]
+        or estado_pay in ["inactivo", "suspendido", "baja", "false", "0"]
+        or activo_usr in [False, "False", "false", 0, "0"]
+        or activo_pay in [False, "False", "false", 0, "0"]
+        or is_active in [False, "False", "false", 0, "0"]
     )
-    
+
     if cuenta_inactiva:
         return (
             render_template(
@@ -182,6 +180,4 @@ def get_article_details(articulo_id):
     """Muestra el detalle público de un artículo."""
     articulo, fetch_error = get_json(f"/articulos/{articulo_id}")
 
-    return render_template(
-        "public/article_details.html", articulo=articulo, fetch_error=fetch_error
-    )
+    return render_template("public/article_details.html", articulo=articulo, fetch_error=fetch_error)

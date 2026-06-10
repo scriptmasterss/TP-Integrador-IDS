@@ -62,9 +62,7 @@ def get_all_usuarios():
     except mysql.connector.Error as query_err:
         logging.error(f"Database query error in get_all_usuarios: {query_err}")
 
-        return jsonify(
-            {"error": "Internal server error: Database query failed"}
-        ), HTTP_INTERNAL_SERVER_ERROR
+        return jsonify({"error": "Internal server error: Database query failed"}), HTTP_INTERNAL_SERVER_ERROR
 
     except Exception as e:
         print(repr(e))
@@ -109,18 +107,14 @@ def get_usuario_by_id(usuario_id):
         usuario = cursor.fetchone()
 
         if not usuario:
-            return jsonify(
-                {"error": f"User with ID {usuario_id} not found"}
-            ), HTTP_NOT_FOUND
+            return jsonify({"error": f"User with ID {usuario_id} not found"}), HTTP_NOT_FOUND
 
         return jsonify(usuario), HTTP_OK
 
     except mysql.connector.Error as query_err:
         logging.error(f"Database query error in get_usuario_by_id: {query_err}")
 
-        return jsonify(
-            {"error": "Internal server error: Database query failed"}
-        ), HTTP_INTERNAL_SERVER_ERROR
+        return jsonify({"error": "Internal server error: Database query failed"}), HTTP_INTERNAL_SERVER_ERROR
 
     finally:
         try:
@@ -318,7 +312,7 @@ def create_usuario():
 
 
 @usuarios_bp.route("/api/usuarios/<int:usuario_id>", methods=["GET"])
-@requiere_auth(roles=["admin"])
+@requiere_auth(roles=["admin", "alumno"])
 def get_usuario(usuario_id):
     """Descripción: función get_usuario."""
     conn = obtener_conexion()
