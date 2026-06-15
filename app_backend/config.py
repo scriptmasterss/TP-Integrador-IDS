@@ -13,9 +13,12 @@ from dotenv import find_dotenv, load_dotenv
 env_path = find_dotenv()
 if env_path:
     if not load_dotenv(env_path):
-        print("Archivo .env no encontrado, usando valores por defecto", env_path)
+        print("Archivo .env vacio, usando valores por defecto")
+else:
+    print("Archivo .env no encontrado, usando valores por defecto", env_path)
 
 DEBUG = os.environ.get("FLASK_DEBUG", "1") == "1"
+DIRECTORIO_LOCAL = os.path.dirname(__file__)
 
 # Ajustes de enlace del servidor
 HOST = os.environ.get("BACKEND_HOST", "127.0.0.1")
@@ -29,11 +32,11 @@ DB_ROOT_PASSWORD = os.environ.get("DB_ROOT_PASSWORD", "contrasenia")
 DB_USER = os.environ.get("DB_USER", "tp_integrador")
 DB_PASSWORD = os.environ.get("DB_PASSWORD", "contrasenia")
 
-# JWT settings
+# Ajustes de JWT
 JWT_SECRETO = os.environ.get("JWT_SECRETO", "secret")
 JWT_HORAS_DE_EXPIRACION = int(os.environ.get("JWT_HORAS_DE_EXPIRACION", "8"))
 JWT_ALGORITMO = os.environ.get("JWT_ALGORITMO", "HS256")
 
-# QR settings
-QR_BORDE = int(os.environ.get("QR_BORDER", "4"))
-QR_TAMANIO = int(os.environ.get("QR_TAMANIO", "10"))
+# Otros
+FORMATO_FECHA = "%d/%m/%Y"
+FORMATO_HORA = "%H:%i"

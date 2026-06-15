@@ -28,7 +28,7 @@ def obtener_conexion():
             user=config.DB_USER,
             password=config.DB_PASSWORD,
             database=config.DB_NAME,
-            port=config.DB_PORT
+            port=config.DB_PORT,
         )
         return connection
 
@@ -67,7 +67,7 @@ def init_database():
             script = f.read()
 
         # Ejecutar múltiples sentencias separadas por ';' de forma segura
-        statements = [s.strip() for s in script.split(';') if s.strip()]
+        statements = [s.strip() for s in script.split(";") if s.strip()]
         for stmt in statements:
             cursor.execute(stmt)
         conn.commit()

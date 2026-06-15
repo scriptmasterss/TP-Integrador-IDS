@@ -1,13 +1,16 @@
 USE sistema_prestamos;
-SET NAMES utf8mb4;
 
--- ==============================================================================
--- 0. PREPARACIÓN (Limpieza de tablas y reseteo de AUTO_INCREMENT)
--- ==============================================================================
+SET
+  NAMES utf8mb4;
+
+SET
+  time_zone = '-03:00';
+
+SET
+  lc_time_names = 'es_ES';
+
 SET
   FOREIGN_KEY_CHECKS = 0;
-
-TRUNCATE TABLE qr;
 
 TRUNCATE TABLE estado_devuelto;
 
@@ -19,972 +22,524 @@ TRUNCATE TABLE articulos;
 
 TRUNCATE TABLE usuario;
 
+TRUNCATE TABLE faq;
+
 TRUNCATE TABLE normativa;
 
 SET
   FOREIGN_KEY_CHECKS = 1;
 
--- ==============================================================================
--- 1. USUARIOS (Roles distribuidos, contraseñas dummy, estados activos/inactivos)
--- ==============================================================================
 -- Hash para la contraseña "password"
 SET
   @dummy_hash = '$2b$12$.yNicNI/5TBWFR.cxzZyculiuEX/6lsgU/4V8um308AtCNfpDasm2';
 
+-- =========================================================================
+-- 1. USUARIOS (26 filas)
+-- =========================================================================
 INSERT INTO
   usuario (
+    id,
     nombre,
     email,
-    puntaje,
     rol,
     carrera,
     contrasenia_hash,
     activo
   )
 VALUES
-  -- Administración y Staff (IDs 1 al 5)
   (
-    'Admin Sistema',
-    'admin@instituto.edu.ar',
-    100,
-    'admin',
-    NULL,
-    @dummy_hash,
-    1
-  ),
-  (
-    'Biblio Principal',
-    'biblioteca@instituto.edu.ar',
-    100,
-    'bibliotecario',
-    NULL,
-    @dummy_hash,
-    1
-  ),
-  (
-    'Profesor Laboratorio',
-    'proflab@instituto.edu.ar',
-    100,
-    'profesor',
-    'Ingenieria Electronica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Profesor Taller',
-    'proftaller@instituto.edu.ar',
-    100,
-    'profesor',
-    'Ingenieria Mecanica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Profesor Sistemas',
-    'profsis@instituto.edu.ar',
-    100,
-    'profesor',
-    'Ingenieria en Sistemas',
-    @dummy_hash,
-    1
-  ),
-  -- Alumnos (IDs 6 al 50)
-  (
-    'Ana Martinez',
-    'amartinez@instituto.edu.ar',
-    85,
+    1,
+    'Juan Perez',
+    'juan.perez@universidad.edu',
     'alumno',
-    'Ingenieria en Sistemas',
+    'Ingeniería en Informática',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
+    2,
+    'Ana Gomez',
+    'ana.gomez@universidad.edu',
+    'alumno',
+    'Ingeniería Electrónica',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    3,
     'Carlos Ruiz',
-    'cruiz@instituto.edu.ar',
-    92,
-    'alumno',
-    'Ingenieria Electronica',
+    'carlos.ruiz@universidad.edu',
+    'profesor',
+    'Ingeniería Mecánica',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Laura Gomez',
-    'lgomez@instituto.edu.ar',
-    45,
-    'alumno',
-    'Arquitectura',
+    4,
+    'Laura Sol',
+    'laura.sol@universidad.edu',
+    'bibliotecario',
+    'Desconocido',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
+    5,
+    'Admin User',
+    'admin@universidad.edu',
+    'admin',
+    'Desconocido',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    6,
+    'Pedro Inactivo',
+    'pedro.inactivo@universidad.edu',
+    'alumno',
+    'Ingeniería Química',
+    @dummy_hash,
+    FALSE
+  ),
+  (
+    7,
+    'María Rodríguez',
+    'maria.rodriguez@universidad.edu',
+    'alumno',
+    'Ingeniería Civil',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    8,
     'Diego Fernandez',
-    'dfernandez@instituto.edu.ar',
-    100,
+    'diego.fernandez@universidad.edu',
     'alumno',
-    'Derecho',
+    'Ingeniería Industrial',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Sofia Silva',
-    'ssilva@instituto.edu.ar',
-    78,
-    'alumno',
-    'Medicina',
+    9,
+    'Patricia Lopez',
+    'patricia.lopez@universidad.edu',
+    'profesor',
+    'Bioingeniería',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Martin Castro',
-    'mcastro@instituto.edu.ar',
-    30,
-    'alumno',
-    'Ingenieria Civil',
-    @dummy_hash,
-    0
-  ),  -- Inactivo
-  (
-    'Lucia Torres',
-    'ltorres@instituto.edu.ar',
-    88,
-    'alumno',
-    'Quimica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Javier Lopez',
-    'jlopez@instituto.edu.ar',
-    55,
-    'alumno',
-    'Fisica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Camila Diaz',
-    'cdiaz@instituto.edu.ar',
-    95,
-    'alumno',
-    'Biologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Facundo Morales',
-    'fmorales@instituto.edu.ar',
-    20,
-    'alumno',
-    'Matematica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Valentina Herrera',
-    'vherrera@instituto.edu.ar',
-    70,
-    'alumno',
-    'Ingenieria en Sistemas',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Matias Romero',
-    'mromero@instituto.edu.ar',
-    82,
-    'alumno',
-    'Ingenieria Electronica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Florencia Suarez',
-    'fsuarez@instituto.edu.ar',
-    40,
-    'alumno',
-    'Arquitectura',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Ezequiel Dominguez',
-    'edominguez@instituto.edu.ar',
-    65,
-    'alumno',
-    'Derecho',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Julieta Gimenez',
-    'jgimenez@instituto.edu.ar',
-    91,
-    'alumno',
-    'Psicologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Tomas Alonso',
-    'talonso@instituto.edu.ar',
     10,
+    'Javier Martinez',
+    'javier.martinez@universidad.edu',
     'alumno',
-    'Ingenieria en Sistemas',
+    'Lic. en Análisis de Sistemas',
     @dummy_hash,
-    0
-  ),  -- Inactivo
-  (
-    'Rocio Blanco',
-    'rblanco@instituto.edu.ar',
-    89,
-    'alumno',
-    'Quimica',
-    @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Nicolas Medina',
-    'nmedina@instituto.edu.ar',
-    76,
+    11,
+    'Elena Gomez',
+    'elena.gomez@universidad.edu',
     'alumno',
-    'Fisica',
+    'Ingeniería en Alimentos',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Micaela Vega',
-    'mvega@instituto.edu.ar',
-    99,
-    'alumno',
-    'Biologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Gaston Navarro',
-    'gnavarro@instituto.edu.ar',
-    34,
-    'alumno',
-    'Matematica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Paula Iglesias',
-    'piglesias@instituto.edu.ar',
-    50,
-    'alumno',
-    'Ingenieria Industrial',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Agustin Cabrera',
-    'acabrera@instituto.edu.ar',
-    66,
-    'alumno',
-    'Arquitectura',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Carolina Vidal',
-    'cvidal@instituto.edu.ar',
-    87,
-    'alumno',
-    'Medicina',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Julian Mendoza',
-    'jmendoza@instituto.edu.ar',
-    15,
-    'alumno',
-    'Derecho',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Emilia Ortiz',
-    'eortiz@instituto.edu.ar',
-    74,
-    'alumno',
-    'Economia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Lucas Rios',
-    'lrios@instituto.edu.ar',
-    93,
-    'alumno',
-    'Psicologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Agostina Castillo',
-    'acastillo@instituto.edu.ar',
-    60,
-    'alumno',
-    'Quimica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Franco Acosta',
-    'facosta@instituto.edu.ar',
-    81,
-    'alumno',
-    'Fisica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Daniela Peralta',
-    'dperalta@instituto.edu.ar',
-    22,
-    'alumno',
-    'Biologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Ignacio Paz',
-    'ipaz@instituto.edu.ar',
-    79,
-    'alumno',
-    'Matematica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Martina Nuñez',
-    'mnunez@instituto.edu.ar',
-    90,
-    'alumno',
-    'Ingenieria en Sistemas',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Pablo Aguilar',
-    'paguilar@instituto.edu.ar',
-    48,
-    'alumno',
-    'Arquitectura',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Victoria Mendez',
-    'vmendez@instituto.edu.ar',
-    84,
-    'alumno',
-    'Medicina',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Rodrigo Cruz',
-    'rcruz@instituto.edu.ar',
-    33,
-    'alumno',
-    'Derecho',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Belen Arias',
-    'barias@instituto.edu.ar',
-    97,
-    'alumno',
-    'Economia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Joaquin Cabrera',
-    'jcabrera@instituto.edu.ar',
-    56,
-    'alumno',
-    'Psicologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Candela Molina',
-    'cmolina@instituto.edu.ar',
-    71,
-    'alumno',
-    'Quimica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Alejandro Rojas',
-    'arojas@instituto.edu.ar',
-    83,
-    'alumno',
-    'Fisica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Renata Luna',
-    'rluna@instituto.edu.ar',
     12,
-    'alumno',
-    'Biologia',
+    'Ricardo Diaz',
+    'ricardo.diaz@universidad.edu',
+    'profesor',
+    'Ingeniería en Petróleo',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Esteban Miranda',
-    'emiranda@instituto.edu.ar',
-    68,
-    'alumno',
-    'Matematica',
+    13,
+    'Sonia Alvarez',
+    'sonia.alvarez@universidad.edu',
+    'bibliotecario',
+    'Desconocido',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Josefina Soto',
-    'jsoto@instituto.edu.ar',
-    96,
+    14,
+    'Lucas Benitez',
+    'lucas.benitez@universidad.edu',
     'alumno',
-    'Ingenieria en Sistemas',
+    'Ingeniería en Energía Eléctrica',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Marcos Bravo',
-    'mbravo@instituto.edu.ar',
-    41,
+    15,
+    'Clara Romero',
+    'clara.romero@universidad.edu',
     'alumno',
-    'Arquitectura',
+    'Ingeniería en Agrimensura',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Antonella Gallardo',
-    'agallardo@instituto.edu.ar',
-    75,
+    16,
+    'Martin Silva',
+    'martin.silva@universidad.edu',
     'alumno',
-    'Medicina',
+    'Ingeniería Naval',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Leandro Marquez',
-    'lmarquez@instituto.edu.ar',
-    86,
+    17,
+    'Sofia Castro',
+    'sofia.castro@universidad.edu',
     'alumno',
-    'Derecho',
+    'Ingeniería en Informática',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Solange Paredes',
-    'sparedes@instituto.edu.ar',
+    18,
+    'Alejandro Sosa',
+    'alejandro.sosa@universidad.edu',
+    'profesor',
+    'Ingeniería Electrónica',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    19,
+    'Gabriela Medina',
+    'gabriela.medina@universidad.edu',
+    'alumno',
+    'Ingeniería Industrial',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    20,
+    'Tomas Herrera',
+    'tomas.herrera@universidad.edu',
+    'alumno',
+    'Ingeniería Mecánica',
+    @dummy_hash,
+    FALSE
+  ),
+  (
+    21,
+    'Nicolas Flores',
+    'nicolas.flores@universidad.edu',
+    'alumno',
+    'Lic. en Análisis de Sistemas',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    22,
+    'Valeria Ortiz',
+    'valeria.ortiz@universidad.edu',
+    'alumno',
+    'Bioingeniería',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    23,
+    'Daniel Mendez',
+    'daniel.mendez@universidad.edu',
+    'profesor',
+    'Ingeniería Química',
+    @dummy_hash,
+    TRUE
+  ),
+  (
+    24,
+    'Florencia Blanco',
+    'florencia.blanco@universidad.edu',
+    'alumno',
+    'Ingeniería Civil',
+    @dummy_hash,
+    TRUE
+  ),
+  (
     25,
+    'Andres Acosta',
+    'andres.acosta@universidad.edu',
     'alumno',
-    'Economia',
+    'Ingeniería en Petróleo',
     @dummy_hash,
-    1
+    TRUE
   ),
   (
-    'Emanuel Rivas',
-    'erivas@instituto.edu.ar',
-    94,
-    'alumno',
-    'Psicologia',
+    26,
+    'Mariana Rios',
+    'mariana.rios@universidad.edu',
+    'bibliotecario',
+    'Desconocido',
     @dummy_hash,
-    1
-  ),
-  (
-    'Abril Ferreyra',
-    'aferreyra@instituto.edu.ar',
-    53,
-    'alumno',
-    'Quimica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Guillermo Ponce',
-    'gponce@instituto.edu.ar',
-    80,
-    'alumno',
-    'Fisica',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Melina Correa',
-    'mcorrea@instituto.edu.ar',
-    62,
-    'alumno',
-    'Biologia',
-    @dummy_hash,
-    1
-  ),
-  (
-    'Hernan Varela',
-    'hvarela@instituto.edu.ar',
-    100,
-    'alumno',
-    'Matematica',
-    @dummy_hash,
-    1
+    TRUE
   );
 
--- ==============================================================================
--- 2. ARTICULOS (Equipamiento real de laboratorio, IT, herramientas manuales y libros)
--- ==============================================================================
+-- =========================================================================
+-- 2. ARTÍCULOS (26 filas)
+-- =========================================================================
 INSERT INTO
   articulos (
-    nombre_art,
+    id,
+    nombre,
     tipo,
     seccion,
-    prestacion_maxima,
     stock,
-    necesita_reparacion
+    necesita_reparacion,
+    activo
   )
 VALUES
   (
-    'Osciloscopio Digital Rigol DS1054Z',
-    'Electronicos',
-    'Laboratorio',
-    3,
-    5,
-    0
-  ),
-  (
-    'Multímetro Fluke 117',
-    'Herramienta',
-    'Laboratorio',
-    7,
-    12,
-    0
-  ),
-  (
-    'Estación de Soldado Hakko FX-888D',
-    'Electronicos',
-    'Laboratorio',
-    5,
-    4,
-    1
-  ),
-  (
-    'Placa Arduino UNO R3',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    30,
-    0
-  ),
-  (
-    'Raspberry Pi 4 Model B (4GB)',
-    'Electronicos',
-    'Tecnologia',
-    7,
-    15,
-    0
-  ),
-  (
-    'Taladro Inalámbrico Bosch 18V',
-    'Herramienta',
-    'Tecnologia',
-    3,
-    6,
-    0
-  ),
-  (
-    'Crimpeadora RJ45 Rj11 AMP',
-    'Herramienta',
-    'Tecnologia',
-    5,
-    8,
-    0
-  ),
-  (
-    'Tester de Redes LAN',
-    'Electronicos',
-    'Laboratorio',
-    3,
-    4,
-    0
-  ),
-  (
-    'Router Cisco ISR 4321',
-    'Electronicos',
-    'Laboratorio',
-    14,
-    2,
-    0
-  ),
-  (
-    'Switch Catalyst 2960-X',
-    'Electronicos',
-    'Laboratorio',
-    14,
-    3,
-    1
-  ),
-  (
-    'Libro: Clean Code - Robert C. Martin',
-    'Libro',
-    'Biblioteca',
-    21,
-    5,
-    0
-  ),
-  (
-    'Libro: Diseño Digital - Mano & Ciletti',
-    'Libro',
-    'Biblioteca',
-    14,
-    3,
-    0
-  ),
-  (
-    'Fuente de Alimentacion Regulable 30V 5A',
-    'Electronicos',
-    'Laboratorio',
-    5,
-    8,
-    0
-  ),
-  (
-    'Generador de Funciones 20MHz',
-    'Electronicos',
-    'Laboratorio',
-    3,
-    4,
-    0
-  ),
-  (
-    'Protoboard 830 Puntos',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    50,
-    0
-  ),
-  (
-    'Set de Destornilladores de Precisión Wiha',
-    'Herramienta',
-    'Tecnologia',
-    7,
-    10,
-    0
-  ),
-  (
-    'Kit de Componentes Pasivos (Res/Cap)',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    20,
-    0
-  ),
-  (
-    'Impresora 3D Creality Ender 3 V2',
-    'Electronicos',
-    'Laboratorio',
-    2,
-    3,
-    0
-  ),
-  (
-    'Filamento PLA 1KG (Varios Colores)',
-    'Accesorios',
-    'Tecnologia',
-    3,
-    15,
-    0
-  ),
-  (
-    'Cámara Térmica FLIR C5',
-    'Electronicos',
-    'Laboratorio',
-    2,
     1,
-    0
+    'Multímetro Digital',
+    'Herramienta',
+    'Laboratorio 1',
+    5,
+    FALSE,
+    TRUE
   ),
   (
-    'Pinza Amperimétrica UNI-T UT204',
-    'Herramienta',
-    'Tecnologia',
-    5,
-    6,
-    0
+    2,
+    'Osciloscopio',
+    'Electrónica',
+    'Laboratorio 1',
+    2,
+    TRUE,
+    TRUE
   ),
   (
-    'Calibre Digital Mitutoyo 150mm',
-    'Herramienta',
-    'Tecnologia',
-    5,
+    3,
+    'Cámara Térmica',
+    'Instrumento',
+    'Almacén',
+    1,
+    FALSE,
+    TRUE
+  ),
+  (
     4,
-    0
+    'Set Destornilladores',
+    'Herramienta',
+    'Taller',
+    10,
+    FALSE,
+    TRUE
   ),
   (
-    'Proyector Epson PowerLite E20',
+    5,
     'Proyector',
-    'Tecnologia',
+    'Multimedia',
+    'Biblioteca',
+    3,
+    FALSE,
+    TRUE
+  ),
+  (
+    6,
+    'Tablet Antigua',
+    'Electrónica',
+    'Desuso',
     1,
-    5,
-    0
+    TRUE,
+    FALSE
   ),
   (
-    'Microfono Condensador Audio-Technica',
-    'Electronicos',
-    'Tecnologia',
-    3,
-    2,
-    0
-  ),
-  (
-    'Teclado Controlador MIDI M-Audio 49',
-    'Electronicos',
-    'Tecnologia',
     7,
+    'Generador de Funciones',
+    'Electrónica',
+    'Laboratorio 1',
     3,
-    0
+    FALSE,
+    TRUE
   ),
   (
-    'Guitarra Acústica Yamaha F310',
+    8,
+    'Soldador de Estaño',
     'Herramienta',
-    'Otros',
+    'Taller',
+    8,
+    FALSE,
+    TRUE
+  ),
+  (
+    9,
+    'Fuente de Alimentación Regulable',
+    'Electrónica',
+    'Laboratorio 2',
     4,
-    1,
-    0
+    FALSE,
+    TRUE
   ),
   (
-    'Bajo Eléctrico Squier Affinity',
-    'Electronicos',
-    'Otros',
-    7,
-    2,
-    0
-  ),
-  (
-    'Amplificador Fender Champion 20',
-    'Electronicos',
-    'Tecnologia',
-    3,
-    3,
-    0
-  ),
-  (
-    'Libro: Cálculo - James Stewart',
-    'Libro',
-    'Biblioteca',
-    21,
     10,
-    0
+    'Calibre Digital',
+    'Instrumento',
+    'Taller',
+    6,
+    FALSE,
+    TRUE
   ),
   (
-    'Libro: Física Universitaria - Sears Zemansky',
-    'Libro',
+    11,
+    'Notebook I7',
+    'Computación',
     'Biblioteca',
-    21,
+    5,
+    FALSE,
+    TRUE
+  ),
+  (
     12,
-    1
+    'Analizador de Redes',
+    'Telecomunicaciones',
+    'Laboratorio 3',
+    1,
+    FALSE,
+    TRUE
   ),
   (
-    'Módulo ESP32 NodeMCU',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    25,
-    0
-  ),
-  (
-    'Sensor Ultrasónico HC-SR04',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    40,
-    0
-  ),
-  (
-    'Amoladora Angular Makita 115mm',
-    'Herramienta',
-    'Tecnologia',
-    3,
-    4,
-    0
-  ),
-  (
-    'Sierra Circular DeWalt',
-    'Herramienta',
-    'Tecnologia',
-    3,
+    13,
+    'Impresora 3D Portable',
+    'Prototipado',
+    'Taller',
     2,
-    0
+    TRUE,
+    TRUE
   ),
   (
-    'Set de Llaves Combinadas Bahco',
-    'Herramienta',
-    'Laboratorio',
-    7,
-    5,
-    0
-  ),
-  (
-    'Cautín Tipo Lapiz 40W',
-    'Herramienta',
-    'Laboratorio',
-    5,
-    15,
-    0
-  ),
-  (
-    'Malla Desoldadora',
-    'Accesorios',
-    'Laboratorio',
-    15,
-    30,
-    0
-  ),
-  (
-    'Estaño 60/40 1mm (Rollo 250g)',
-    'Accesorios',
-    'Laboratorio',
-    15,
-    20,
-    0
-  ),
-  (
-    'Lupa con Iluminación LED',
-    'Herramienta',
-    'Laboratorio',
-    5,
-    8,
-    0
-  ),
-  (
-    'Módulo de Relés 4 Canales 5V',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    15,
-    0
-  ),
-  (
-    'Servomotor SG90',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    30,
-    0
-  ),
-  (
-    'Microcontrolador PIC16F877A',
-    'Accesorios',
-    'Tecnologia',
-    15,
-    20,
-    0
-  ),
-  (
-    'Programador PICkit 3',
-    'Electronicos',
-    'Laboratorio',
-    5,
-    5,
-    0
-  ),
-  (
-    'Analizador Lógico 8 Canales 24MHz',
-    'Electronicos',
-    'Laboratorio',
-    5,
-    4,
-    0
-  ),
-  (
-    'Cable HDMI 3 Metros',
-    'Accesorios',
-    'Bedelia',
-    7,
-    15,
-    0
-  ),
-  (
-    'Cámara Reflex Canon EOS Rebel T7',
-    'Electronicos',
-    'Tecnologia',
-    2,
-    2,
-    0
-  ),
-  (
-    'Trípode Manfrotto',
-    'Herramienta',
-    'Tecnologia',
-    3,
-    3,
-    0
-  ),
-  (
-    'Libro: Redes de Computadoras - Tanenbaum',
-    'Libro',
-    'Biblioteca',
     14,
-    4,
-    0
+    'Kit de Sensores Arduino',
+    'Electrónica',
+    'Laboratorio 1',
+    12,
+    FALSE,
+    TRUE
   ),
   (
-    'Pizarra Blanca Magnética Móvil',
+    15,
+    'Nivel Óptico',
+    'Medición',
+    'Almacén Topografía',
+    2,
+    FALSE,
+    TRUE
+  ),
+  (
+    16,
+    'Pistola de Calor',
     'Herramienta',
-    'Bedelia',
-    1,
-    5,
-    0
-  ),
-  (
-    'Set de marcadores para pizarra',
-    'Herramienta',
-    'Bedelia',
-    1,
-    10,
-    0
-  ),
-  (
-    'Alargue reforzado 10m',
-    'Accesorios',
-    'Bedelia',
-    1,
-    5,
-    0
-  ),
-  (
-    'Puntero láser inalabrico Logitech R400',
-    'Herramienta',
-    'Bedelia',
-    1,
-    8,
-    0
-  ),
-  (
-    'Kit de Limpieza de Contactos (Alcohol Iso)',
-    'Accesorios',
-    'Otros',
+    'Taller',
     3,
-    10,
-    0
+    FALSE,
+    TRUE
+  ),
+  (
+    17,
+    'Gafas de Realidad Virtual',
+    'Multimedia',
+    'Gabinete IT',
+    2,
+    FALSE,
+    TRUE
+  ),
+  (
+    18,
+    'Deshumidificador de Ambiente',
+    'Mantenimiento',
+    'Almacén',
+    2,
+    FALSE,
+    TRUE
+  ),
+  (
+    19,
+    'Balanza de Precisión',
+    'Medición',
+    'Laboratorio Química',
+    3,
+    FALSE,
+    TRUE
+  ),
+  (
+    20,
+    'Viscosímetro',
+    'Instrumento',
+    'Laboratorio Química',
+    1,
+    FALSE,
+    TRUE
+  ),
+  (
+    21,
+    'Tacómetro Digital',
+    'Medición',
+    'Taller Mecánica',
+    2,
+    FALSE,
+    TRUE
+  ),
+  (
+    22,
+    'Durometro',
+    'Instrumento',
+    'Taller Mecánica',
+    1,
+    FALSE,
+    TRUE
+  ),
+  (
+    23,
+    'Punta de Prueba Lógica',
+    'Electrónica',
+    'Laboratorio 2',
+    15,
+    FALSE,
+    TRUE
+  ),
+  (
+    24,
+    'Microscopio Digital',
+    'Instrumento',
+    'Laboratorio Bio',
+    3,
+    FALSE,
+    TRUE
+  ),
+  (
+    25,
+    'Placa de Desarrollo FPGA',
+    'Electrónica',
+    'Laboratorio 3',
+    5,
+    FALSE,
+    TRUE
+  ),
+  (
+    26,
+    'Monitor de Gases',
+    'Seguridad',
+    'Almacén',
+    2,
+    TRUE,
+    FALSE
   );
 
--- ==============================================================================
--- 3. RESERVAS
--- ==============================================================================
+-- =========================================================================
+-- 3. RESERVAS (25 filas)
+-- Solo los IDs del 11 al 22 tendrán estado 'devuelto' y poblarán estado_devuelto
+-- =========================================================================
 INSERT INTO
   reserva (
+    id,
     id_usuario,
-    id_reservado,
+    id_articulo,
     estado_reserva,
     fecha_retiro,
     fecha_regreso
@@ -992,447 +547,280 @@ INSERT INTO
 VALUES
   (
     1,
-    4,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 30 DAY),
-    DATE_SUB(NOW(), INTERVAL 28 DAY)
+    1,
+    1,
+    'entregado',
+    '2026-06-15 09:00:00',
+    '2026-06-22 18:00:00'
   ),
   (
     2,
-    1,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
+    2,
+    2,
+    'pendiente',
+    '2026-06-20 10:00:00',
+    '2026-06-22 10:00:00'
   ),
   (
     3,
-    11,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 45 DAY),
-    DATE_SUB(NOW(), INTERVAL 30 DAY)
+    3,
+    4,
+    'aprobado',
+    '2026-06-18 14:00:00',
+    '2026-06-25 14:00:00'
   ),
   (
     4,
-    29,
+    7,
+    5,
     'rechazado',
-    DATE_SUB(NOW(), INTERVAL 10 DAY),
-    DATE_SUB(NOW(), INTERVAL 5 DAY)
+    '2026-06-01 09:00:00',
+    '2026-06-02 09:00:00'
   ),
   (
     5,
-    5,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY)
+    8,
+    7,
+    'cancelado',
+    '2026-06-10 11:00:00',
+    '2026-06-12 11:00:00'
   ),
   (
     6,
-    6,
+    10,
+    9,
     'entregado',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 1 DAY)
+    '2026-06-14 08:30:00',
+    '2026-06-19 12:00:00'
   ),
   (
     7,
-    30,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 15 DAY),
-    DATE_SUB(NOW(), INTERVAL 10 DAY)
+    11,
+    11,
+    'aprobado',
+    '2026-06-19 09:00:00',
+    '2026-06-21 17:00:00'
   ),
   (
     8,
-    2,
+    14,
+    14,
     'pendiente',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 3 DAY)
+    '2026-06-24 10:00:00',
+    '2026-06-26 10:00:00'
   ),
   (
     9,
     15,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
+    15,
+    'pendiente',
+    '2026-06-25 08:00:00',
+    '2026-06-25 18:00:00'
   ),
   (
     10,
-    22,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 20 DAY),
-    DATE_SUB(NOW(), INTERVAL 18 DAY)
+    16,
+    16,
+    'rechazado',
+    '2026-06-05 14:00:00',
+    '2026-06-07 14:00:00'
   ),
   (
     11,
-    4,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 14 DAY)
+    1,
+    3,
+    'devuelto',
+    '2026-05-10 08:00:00',
+    '2026-05-12 08:00:00'
   ),
   (
     12,
-    13,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
+    7,
+    8,
+    'devuelto',
+    '2026-05-15 10:00:00',
+    '2026-05-17 10:00:00'
   ),
   (
     13,
-    26,
+    8,
+    10,
     'devuelto',
-    DATE_SUB(NOW(), INTERVAL 60 DAY),
-    DATE_SUB(NOW(), INTERVAL 55 DAY)
+    '2026-05-20 09:00:00',
+    '2026-05-22 09:00:00'
   ),
   (
     14,
-    48,
-    'rechazado',
-    DATE_SUB(NOW(), INTERVAL 5 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY)
+    10,
+    11,
+    'devuelto',
+    '2026-05-25 14:00:00',
+    '2026-05-28 14:00:00'
   ),
   (
     15,
-    31,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 7 DAY)
+    17,
+    17,
+    'devuelto',
+    '2026-06-01 09:00:00',
+    '2026-06-03 17:00:00'
   ),
   (
     16,
-    8,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 1 DAY)
+    19,
+    19,
+    'devuelto',
+    '2026-06-02 08:00:00',
+    '2026-06-04 12:00:00'
   ),
   (
     17,
-    18,
+    21,
+    23,
     'devuelto',
-    DATE_SUB(NOW(), INTERVAL 12 DAY),
-    DATE_SUB(NOW(), INTERVAL 10 DAY)
+    '2026-06-05 11:00:00',
+    '2026-06-05 16:00:00'
   ),
   (
     18,
-    21,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 4 DAY)
+    22,
+    24,
+    'devuelto',
+    '2026-06-06 09:30:00',
+    '2026-06-08 09:30:00'
   ),
   (
     19,
-    32,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 6 DAY)
+    24,
+    25,
+    'devuelto',
+    '2026-06-08 13:00:00',
+    '2026-06-10 13:00:00'
   ),
   (
     20,
-    29,
+    25,
+    14,
     'devuelto',
-    DATE_SUB(NOW(), INTERVAL 40 DAY),
-    DATE_SUB(NOW(), INTERVAL 35 DAY)
+    '2026-06-10 10:00:00',
+    '2026-06-12 10:00:00'
   ),
   (
     21,
-    33,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 1 DAY)
+    2,
+    1,
+    'devuelto',
+    '2026-06-11 09:00:00',
+    '2026-06-13 09:00:00'
   ),
   (
     22,
-    16,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY)
+    14,
+    4,
+    'devuelto',
+    '2026-06-12 15:00:00',
+    '2026-06-14 15:00:00'
   ),
   (
     23,
-    44,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 18 DAY),
-    DATE_SUB(NOW(), INTERVAL 13 DAY)
+    17,
+    13,
+    'entregado',
+    '2026-06-16 10:00:00',
+    '2026-06-20 10:00:00'
   ),
   (
     24,
-    7,
-    'rechazado',
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
-  ),
-  (
-    25,
-    49,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 3 DAY)
-  ),
-  (
-    26,
-    25,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 5 DAY),
-    DATE_SUB(NOW(), INTERVAL 1 DAY)
-  ),
-  (
-    27,
-    3,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 22 DAY),
-    DATE_SUB(NOW(), INTERVAL 20 DAY)
-  ),
-  (
-    28,
-    14,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
-  ),
-  (
-    29,
-    9,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 4 DAY)
-  ),
-  (
-    30,
-    28,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 35 DAY),
-    DATE_SUB(NOW(), INTERVAL 30 DAY)
-  ),
-  (
-    31,
-    34,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 1 DAY)
-  ),
-  (
-    32,
-    10,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY)
-  ),
-  (
-    33,
-    42,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 14 DAY),
-    DATE_SUB(NOW(), INTERVAL 10 DAY)
-  ),
-  (
-    34,
-    12,
-    'rechazado',
-    DATE_SUB(NOW(), INTERVAL 6 DAY),
-    DATE_SUB(NOW(), INTERVAL 1 DAY)
-  ),
-  (
-    35,
-    17,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 6 DAY)
-  ),
-  (
-    36,
     19,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
-  ),
-  (
-    37,
-    37,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 25 DAY),
-    DATE_SUB(NOW(), INTERVAL 20 DAY)
-  ),
-  (
-    38,
-    41,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 7 DAY)
-  ),
-  (
-    39,
-    45,
+    21,
     'aprobado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 6 DAY)
+    '2026-06-19 08:00:00',
+    '2026-06-22 12:00:00'
   ),
   (
-    40,
-    50,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 50 DAY),
-    DATE_SUB(NOW(), INTERVAL 40 DAY)
-  ),
-  (
-    41,
-    20,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 4 DAY),
-    DATE_SUB(NOW(), INTERVAL 2 DAY)
-  ),
-  (
-    42,
-    23,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY)
-  ),
-  (
-    43,
-    27,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 16 DAY),
-    DATE_SUB(NOW(), INTERVAL 14 DAY)
-  ),
-  (
-    44,
-    35,
-    'rechazado',
-    DATE_SUB(NOW(), INTERVAL 8 DAY),
-    DATE_SUB(NOW(), INTERVAL 3 DAY)
-  ),
-  (
-    45,
-    36,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 4 DAY)
-  ),
-  (
-    46,
-    38,
-    'entregado',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 1 DAY)
-  ),
-  (
-    47,
-    39,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 28 DAY),
-    DATE_SUB(NOW(), INTERVAL 26 DAY)
-  ),
-  (
-    48,
-    43,
-    'pendiente',
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY)
-  ),
-  (
-    49,
-    46,
-    'aprobado',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 4 DAY)
-  ),
-  (
-    50,
-    47,
-    'devuelto',
-    DATE_SUB(NOW(), INTERVAL 33 DAY),
-    DATE_SUB(NOW(), INTERVAL 30 DAY)
+    25,
+    21,
+    9,
+    'cancelado',
+    '2026-06-12 09:00:00',
+    '2026-06-14 09:00:00'
   );
 
--- ==============================================================================
--- 4. ESTADO DEVUELTO (Aprovechando el límite VARCHAR 255)
--- ==============================================================================
+-- =========================================================================
+-- 4. ESTADO DEVUELTO (25 filas)
+-- Relacionado dinámicamente con registros devueltos o testeos de incidencias anteriores
+-- =========================================================================
 INSERT INTO
-  estado_devuelto (id_reserva, dias_retraso, condiciones)
+  estado_devuelto (id, id_reserva, dias_retraso, condiciones)
 VALUES
-  (
-    1,
-    0,
-    'Óptimo estado, todos los pines de la placa se encuentran rectos y funcionales.'
-  ),
-  (
-    3,
-    0,
-    'Condición impecable, libro sin marcas ni hojas dobladas.'
-  ),
+  (1, 11, 0, 'Excelente estado'),
+  (2, 11, 2, 'Ligeros rasguños en la carcasa'),
+  (3, 12, 0, 'Limpio y operativo'),
+  (4, 13, 1, 'Caja de transporte levemente dañada'),
+  (5, 14, 0, 'Sin novedades, software intacto'),
+  (6, 15, 0, 'Completo con cables correspondientes'),
   (
     7,
-    2,
-    'Punta del cautín levemente desgastada por el uso. Atraso menor en la entrega.'
+    16,
+    3,
+    'Sucio, requiere limpieza en laboratorio'
+  ),
+  (8, 17, 0, 'Perfecto estado físico y funcional'),
+  (
+    9,
+    18,
+    0,
+    'Devuelto a término, batería cargada'
   ),
   (
     10,
+    19,
     0,
-    'Cables del multímetro en perfecto estado, funcionando correctamente.'
+    'Caja de empaque original arrugada, equipo bien'
   ),
   (
+    11,
+    20,
+    0,
+    'Falta un cable puente del kit, usuario notificado'
+  ),
+  (
+    12,
+    21,
+    5,
+    'Retraso por olvido de entrega, equipo ok'
+  ),
+  (13, 22, 0, 'Herramientas completas'),
+  (14, 11, 0, 'Re-inspeccionado por el supervisor'),
+  (15, 12, 0, 'Devolución estándar exitosa'),
+  (
+    16,
     13,
     0,
-    'Guitarra afinada y sin rayas en el barniz exterior.'
+    'Validado por el laboratorio de petróleos'
   ),
+  (17, 14, 0, 'Cargador con marcas de uso severas'),
+  (18, 15, 1, 'Entrega en mostrador fuera de hora'),
+  (19, 16, 0, 'Condiciones óptimas'),
+  (20, 17, 0, 'Ok'),
   (
-    17,
+    21,
+    18,
     0,
-    'Limpieza profunda realizada por el usuario antes de devolver la impresora 3D.'
+    'Inspeccionado por el docente a cargo'
   ),
-  (
-    20,
-    0,
-    'Tapa del libro levemente doblada, evidencia uso normal de lectura.'
-  ),
-  (
-    23,
-    5,
-    'Entregado con retraso significativo, falta caja original de la placa Arduino.'
-  ),
-  (
-    27,
-    0,
-    'Equipo de soldadura funcionando correctamente, esponja humedecida.'
-  ),
-  (
-    30,
-    0,
-    'Conector plug de audio sin ruidos estáticos, estado general muy bueno.'
-  ),
-  (
-    33,
-    0,
-    'Cuchilla de corte en condiciones de uso seguras y limpias.'
-  ),
-  (
-    37,
-    1,
-    'Falta un poco de malla desoldadora en el rollo pero dentro de lo esperado.'
-  ),
-  (
-    40,
-    0,
-    'Lente de cámara sin rayones ni polvo, tapa incluida.'
-  ),
-  (
-    43,
-    0,
-    'Patas de goma del trípode completas y perillas ajustadas.'
-  ),
-  (
-    47,
-    0,
-    'Filamento restante devuelto correctamente en su bolsa original sellada.'
-  ),
-  (
-    50,
-    3,
-    'Devuelto con manchas de grasa considerables en la carcasa exterior de la herramienta.'
-  );
+  (22, 19, 0, 'Sin fallas'),
+  (23, 20, 0, 'Equipo reingresado a estante A3'),
+  (24, 21, 0, 'Entregado sin protector de goma'),
+  (25, 22, 2, 'Demora por feriado institucional');
 
--- ==============================================================================
--- 5. PENALIZACIONES (Alineadas y vinculadas con ID de Reserva específico y Severidad)
--- ==============================================================================
+-- =========================================================================
+-- 5. PENALIZACIONES (25 filas)
+-- Vinculado a usuarios y reservas existentes de manera lógica
+-- =========================================================================
 INSERT INTO
   penalizacion (
+    id,
     id_usuario,
     id_reserva,
     motivo,
@@ -1443,349 +831,508 @@ INSERT INTO
   )
 VALUES
   (
+    1,
+    1,
+    11,
+    'Devolución tardía de equipo',
+    '2026-05-12 09:00:00',
+    '2026-05-20 09:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    2,
     7,
+    4,
+    'Uso indebido de solicitud',
+    '2026-06-01 10:00:00',
+    '2026-07-01 10:00:00',
+    TRUE,
+    'media'
+  ),
+  (
+    3,
+    8,
+    13,
+    'Retraso de 1 día en entrega de calibre',
+    '2026-05-23 08:00:00',
+    '2026-05-26 08:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    4,
+    19,
+    16,
+    'Retraso de 3 días e instrumental sucio',
+    '2026-06-07 13:00:00',
+    '2026-06-21 13:00:00',
+    TRUE,
+    'media'
+  ),
+  (
+    5,
+    2,
+    21,
+    'Demora crítica de 5 días en entrega',
+    '2026-06-18 10:00:00',
+    '2026-07-02 10:00:00',
+    TRUE,
+    'alta'
+  ),
+  (
+    6,
+    14,
+    22,
+    'Entrega fuera de término recurrente',
+    '2026-06-16 16:00:00',
+    '2026-06-23 16:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
     7,
-    'Devolución fuera de término (2 días de retraso)',
-    DATE_SUB(NOW(), INTERVAL 10 DAY),
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    0,
+    10,
+    14,
+    'No reportar falla física al retirar',
+    '2026-05-29 09:00:00',
+    '2026-06-05 09:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    8,
+    15,
+    9,
+    'Falta a cita de retiro aprobada sin aviso',
+    '2026-06-26 08:00:00',
+    '2026-07-03 08:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
+    9,
+    16,
+    10,
+    'Intento de reserva con datos falseados',
+    '2026-06-06 09:00:00',
+    '2026-07-06 09:00:00',
+    TRUE,
+    'alta'
+  ),
+  (
+    10,
+    25,
+    20,
+    'Falta de componente menor en Kit Arduino',
+    '2026-06-13 11:00:00',
+    '2026-06-20 11:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
+    11,
+    1,
+    1,
+    'Descarga total de batería destructiva',
+    '2026-06-23 09:00:00',
+    '2026-07-23 09:00:00',
+    TRUE,
+    'media'
+  ),
+  (
+    12,
+    11,
+    7,
+    'Negativa a devolver en fecha pactada',
+    '2026-06-22 08:00:00',
+    '2026-07-06 08:00:00',
+    TRUE,
+    'media'
+  ),
+  (
+    13,
+    24,
+    19,
+    'Daño menor cosmético en carcasa FPGA',
+    '2026-06-11 14:00:00',
+    '2026-06-18 14:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    14,
+    22,
+    18,
+    'Retraso administrativo de entrega',
+    '2026-06-09 10:00:00',
+    '2026-06-12 10:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    15,
+    17,
+    15,
+    'Entrega fuera de hora de atención',
+    '2026-06-04 18:00:00',
+    '2026-06-07 18:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    16,
+    21,
+    17,
+    'Falta de limpieza en visor VR',
+    '2026-06-06 09:00:00',
+    '2026-06-10 09:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    17,
+    10,
+    6,
+    'Negativa a firmar acta de retiro',
+    '2026-06-15 13:00:00',
+    '2026-06-22 13:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
+    18,
+    3,
+    3,
+    'Olvido de instrumental en aula común',
+    '2026-06-26 15:00:00',
+    '2026-07-10 15:00:00',
+    TRUE,
+    'media'
+  ),
+  (
+    19,
+    8,
+    5,
+    'Cancelación tardía sobre la hora',
+    '2026-06-11 09:00:00',
+    '2026-06-14 09:00:00',
+    FALSE,
+    'baja'
+  ),
+  (
+    20,
+    17,
+    23,
+    'Maltrato a impresora 3D (atasco forzado)',
+    '2026-06-21 11:00:00',
+    '2026-08-21 11:00:00',
+    TRUE,
+    'alta'
+  ),
+  (
+    21,
+    19,
+    24,
+    'Devolución por terceros sin autorización',
+    '2026-06-23 09:00:00',
+    '2026-06-30 09:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
+    22,
+    7,
+    12,
+    'Manchas de grasa en manual de usuario',
+    '2026-05-18 09:00:00',
+    '2026-05-21 09:00:00',
+    FALSE,
     'baja'
   ),
   (
     23,
-    23,
-    'Retraso crítico en devolución de equipo delicado (5 días)',
-    DATE_SUB(NOW(), INTERVAL 13 DAY),
-    DATE_ADD(NOW(), INTERVAL 2 DAY),
-    1,
-    'alta'
+    14,
+    8,
+    'Petición reiterada de extensión denegada',
+    '2026-06-25 11:00:00',
+    '2026-07-02 11:00:00',
+    TRUE,
+    'baja'
   ),
   (
-    50,
-    50,
-    'Entrega de material con suciedad/grasa',
-    DATE_SUB(NOW(), INTERVAL 30 DAY),
-    DATE_SUB(NOW(), INTERVAL 15 DAY),
-    0,
+    24,
+    2,
+    2,
+    'No presentarse al laboratorio a la hora fijada',
+    '2026-06-21 08:00:00',
+    '2026-06-24 08:00:00',
+    TRUE,
+    'baja'
+  ),
+  (
+    25,
+    1,
+    3,
+    'Acumulación de advertencias menores',
+    '2026-06-19 12:00:00',
+    '2026-07-03 12:00:00',
+    TRUE,
     'media'
-  ),
+  );
+
+-- =========================================================================
+-- 6. FAQ (25 filas)
+-- =========================================================================
+INSERT INTO
+  faq (id, titulo, descripcion)
+VALUES
   (
-    26,
-    26,
-    'Retraso actual en devolución (pendiente de entrega)',
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    DATE_ADD(NOW(), INTERVAL 6 DAY),
     1,
-    'media'
+    '¿Cómo reservar?',
+    'Seleccione el artículo y pulse solicitar.'
   ),
+  (2, 'Horarios', 'Lunes a Viernes de 8 a 20hs.'),
   (
-    41,
-    41,
-    'Retraso actual en devolución de cámara térmica',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 5 DAY),
-    1,
-    'alta'
+    3,
+    '¿Cómo devolver?',
+    'Entregar en mostrador de biblioteca.'
   ),
   (
     4,
-    NULL,
-    'Maltrato verbal al personal de pañol',
-    DATE_SUB(NOW(), INTERVAL 5 DAY),
-    DATE_ADD(NOW(), INTERVAL 25 DAY),
-    1,
-    'alta'
+    '¿Qué pasa si se rompe?',
+    'Reportar inmediatamente al bibliotecario.'
   ),
   (
-    14,
-    NULL,
-    'Intentó retirar equipo sin autorización previa',
-    DATE_SUB(NOW(), INTERVAL 15 DAY),
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    0,
-    'alta'
-  ),
-  (
-    24,
-    24,
-    'Pérdida de conector BNC del osciloscopio',
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    DATE_ADD(NOW(), INTERVAL 28 DAY),
-    1,
-    'media'
-  );
-
--- ==============================================================================
--- 6. QR
--- ==============================================================================
-INSERT INTO
-  qr (id_reserva, fecha_generado, codigo, escaneado)
-VALUES
-  (
-    1,
-    DATE_SUB(NOW(), INTERVAL 31 DAY),
-    'QR-MAT-0001-A',
-    1
-  ),
-  (
-    2,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-EQP-0002-B',
-    0
-  ),
-  (
-    3,
-    DATE_SUB(NOW(), INTERVAL 46 DAY),
-    'QR-BIB-0003-A',
-    1
+    5,
+    'Sanciones',
+    'Las penalizaciones impiden nuevas reservas.'
   ),
   (
     6,
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    'QR-HER-0006-C',
-    1
+    '¿Cuánto dura el préstamo?',
+    'El periodo estándar es de un máximo de 7 días corridos.'
   ),
   (
     7,
-    DATE_SUB(NOW(), INTERVAL 16 DAY),
-    'QR-MAT-0007-A',
-    1
+    '¿Puedo renovar?',
+    'Sí, siempre que no haya otra reserva pendiente sobre el artículo.'
+  ),
+  (
+    8,
+    '¿Qué hago si el laboratorio está cerrado?',
+    'Diríjase a la ventanilla central de biblioteca para la entrega.'
   ),
   (
     9,
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    'QR-MAT-0009-B',
-    1
+    '¿Quiénes pueden usar el sistema?',
+    'Alumnos regulares, docentes e investigadores autorizados.'
   ),
   (
     10,
-    DATE_SUB(NOW(), INTERVAL 21 DAY),
-    'QR-HER-0010-A',
-    1
+    '¿Se pueden retirar consumibles?',
+    'No, insumos como estaño o cables pelados se solicitan directo al pañol.'
   ),
   (
     11,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-MAT-0011-B',
-    1
+    '¿Cómo cancelo una reserva?',
+    'Desde su panel de usuario, sección Historial -> Cancelar antes del retiro.'
   ),
   (
     12,
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    'QR-EQP-0012-A',
-    0
+    'Olvidé mi contraseña',
+    'Utilice el enlace de recuperación o consulte al administrador IT.'
   ),
   (
     13,
-    DATE_SUB(NOW(), INTERVAL 61 DAY),
-    'QR-INS-0013-C',
-    1
+    '¿Hay límite de artículos por reserva?',
+    'Sí, un máximo de 3 artículos en simultáneo por usuario.'
+  ),
+  (
+    14,
+    '¿Los profesores tienen plazos distintos?',
+    'Los docentes pueden solicitar extensiones por proyectos semestrales.'
+  ),
+  (
+    15,
+    '¿Qué significa estado Pendiente?',
+    'Su solicitud está a la espera de la validación del bibliotecario.'
   ),
   (
     16,
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    'QR-EQP-0016-A',
-    1
+    '¿Qué significa estado Aprobado?',
+    'Su reserva fue aceptada, ya puede concurrir en el horario pautado a retirar.'
   ),
   (
     17,
-    DATE_SUB(NOW(), INTERVAL 13 DAY),
-    'QR-EQP-0017-B',
-    1
+    '¿Qué significa estado Entregado?',
+    'Usted posee físicamente el equipo en este momento.'
+  ),
+  (
+    18,
+    'Daños preexistentes',
+    'Revise el equipo al recibirlo. Si nota fallas, repórtelo en ese instante.'
   ),
   (
     19,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-MAT-0019-A',
-    0
+    '¿Puedo enviar a un compañero a retirar?',
+    'No, los retiros son estrictamente personales con credencial o DNI.'
   ),
   (
     20,
-    DATE_SUB(NOW(), INTERVAL 41 DAY),
-    'QR-BIB-0020-B',
-    1
+    'Notificaciones',
+    'El sistema envía correos automáticos ante la proximidad del vencimiento.'
   ),
   (
     21,
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    'QR-HER-0021-A',
-    1
+    'Pérdida de componentes',
+    'Si pierde un accesorio, se penalizará hasta la reposición del mismo.'
   ),
   (
     22,
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    'QR-HER-0022-C',
-    0
+    'Uso fuera de la facultad',
+    'Requiere una nota de autorización firmada por el Director de Carrera.'
   ),
   (
     23,
-    DATE_SUB(NOW(), INTERVAL 19 DAY),
-    'QR-EQP-0023-A',
-    1
+    'Sanciones por mora',
+    'Se calculan de forma automática según los días de retraso registrados.'
   ),
   (
-    26,
-    DATE_SUB(NOW(), INTERVAL 6 DAY),
-    'QR-INS-0026-B',
-    1
+    24,
+    '¿El sistema funciona feriados?',
+    'Se pueden cargar reservas, pero no habrá entregas ni recepciones físicas.'
   ),
   (
-    27,
-    DATE_SUB(NOW(), INTERVAL 23 DAY),
-    'QR-EQP-0027-A',
-    1
-  ),
-  (
-    29,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-EQP-0029-C',
-    0
-  ),
-  (
-    30,
-    DATE_SUB(NOW(), INTERVAL 36 DAY),
-    'QR-EQP-0030-A',
-    1
-  ),
-  (
-    31,
-    DATE_SUB(NOW(), INTERVAL 2 DAY),
-    'QR-HER-0031-B',
-    1
-  ),
-  (
-    32,
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    'QR-EQP-0032-A',
-    0
-  ),
-  (
-    33,
-    DATE_SUB(NOW(), INTERVAL 15 DAY),
-    'QR-MAT-0033-C',
-    1
-  ),
-  (
-    36,
-    DATE_SUB(NOW(), INTERVAL 4 DAY),
-    'QR-MAT-0036-A',
-    1
-  ),
-  (
-    37,
-    DATE_SUB(NOW(), INTERVAL 26 DAY),
-    'QR-MAT-0037-B',
-    1
-  ),
-  (
-    39,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-AUD-0039-A',
-    0
-  ),
-  (
-    40,
-    DATE_SUB(NOW(), INTERVAL 51 DAY),
-    'QR-MAT-0040-C',
-    1
-  ),
-  (
-    41,
-    DATE_SUB(NOW(), INTERVAL 5 DAY),
-    'QR-HER-0041-A',
-    1
-  ),
-  (
-    42,
-    DATE_SUB(NOW(), INTERVAL 0 DAY),
-    'QR-AUD-0042-B',
-    0
-  ),
-  (
-    43,
-    DATE_SUB(NOW(), INTERVAL 17 DAY),
-    'QR-EQP-0043-A',
-    1
-  ),
-  (
-    46,
-    DATE_SUB(NOW(), INTERVAL 3 DAY),
-    'QR-HER-0046-C',
-    1
-  ),
-  (
-    47,
-    DATE_SUB(NOW(), INTERVAL 29 DAY),
-    'QR-EQP-0047-A',
-    1
-  ),
-  (
-    49,
-    DATE_SUB(NOW(), INTERVAL 1 DAY),
-    'QR-AUD-0049-B',
-    0
-  ),
-  (
-    50,
-    DATE_SUB(NOW(), INTERVAL 34 DAY),
-    'QR-BIB-0050-A',
-    1
+    25,
+    'Contacto de Soporte',
+    'Ante errores de sistema, envíe mail a soporte.prestamos@universidad.edu.'
   );
 
--- ==============================================================================
--- 7. NORMATIVA
--- ==============================================================================
+-- =========================================================================
+-- 7. NORMATIVA (25 filas)
+-- =========================================================================
 INSERT INTO
-  normativa (titulo, descripcion, fecha)
+  normativa (id, titulo, descripcion)
 VALUES
   (
-    'Reglamento General de Préstamos',
-    'Define las reglas básicas para el retiro, cuidado y devolución de cualquier activo perteneciente a la institución.',
-    DATE_SUB(NOW(), INTERVAL 400 DAY)
+    1,
+    'Reglamento 001',
+    'Uso exclusivo de equipos para fines académicos.'
   ),
   (
-    'Política de Retrasos y Sanciones',
-    'Especifica el sistema de pérdida de puntos (puntaje) y los tiempos de inhabilitación por entregas fuera de término.',
-    DATE_SUB(NOW(), INTERVAL 390 DAY)
+    2,
+    'Seguridad Lab',
+    'Prohibido comer o beber en áreas de trabajo.'
   ),
   (
-    'Uso Adecuado de Estaciones de Soldado',
-    'Instrucciones obligatorias: uso de esponja vegetal húmeda, limpieza de punta y apagado preventivo.',
-    DATE_SUB(NOW(), INTERVAL 380 DAY)
+    3,
+    'Responsabilidad',
+    'El usuario es responsable por pérdida o daño.'
+  ),
+  (4, 'Plazos', 'Máximo de 7 días por préstamo.'),
+  (
+    5,
+    'Acceso',
+    'Solo alumnos regulares pueden reservar.'
   ),
   (
-    'Normas de Seguridad Eléctrica',
-    'Prohibición estricta de puentear fusibles o alterar conexiones de puesta a tierra en el instrumental.',
-    DATE_SUB(NOW(), INTERVAL 370 DAY)
+    6,
+    'Código de Conducta',
+    'Trato respetuoso hacia el personal técnico y bibliotecario.'
   ),
   (
-    'Manejo de Instrumentos de Medición',
-    'Todo multímetro u osciloscopio debe ser devuelto con sus cables y puntas de prueba originales enrollados.',
-    DATE_SUB(NOW(), INTERVAL 360 DAY)
+    7,
+    'Epps Obligatorios',
+    'Uso de gafas de seguridad y calzado cerrado en el taller mecánico.'
   ),
   (
-    'Cuidado del Material de Biblioteca',
-    'Prohibido subrayar, doblar o alterar de cualquier forma las hojas y cubiertas de los textos de consulta.',
-    DATE_SUB(NOW(), INTERVAL 350 DAY)
+    8,
+    'Protocolo Eléctrico',
+    'No energizar circuitos sin la supervisión previa del docente.'
   ),
   (
-    'Préstamos Excepcionales de Fin de Semana',
-    'Los retiros de día viernes requieren aprobación de un profesor responsable del proyecto.',
-    DATE_SUB(NOW(), INTERVAL 340 DAY)
+    9,
+    'Devolución Limpia',
+    'Los instrumentos deben devolverse libres de polvo, grasa o anotaciones.'
   ),
   (
-    'Reposición por Pérdida o Daño',
-    'En caso de pérdida o daño total, el alumno o equipo de trabajo deberá reponer un ítem de iguales o superiores características.',
-    DATE_SUB(NOW(), INTERVAL 330 DAY)
+    10,
+    'Prioridad Docente',
+    'Las clases prácticas tienen prioridad de stock sobre proyectos personales.'
   ),
   (
-    'Protocolo de Uso de Impresoras 3D',
-    'Obligatorio asistir al curso de nivelación antes de operar maquinarias de fabricación digital.',
-    DATE_SUB(NOW(), INTERVAL 320 DAY)
+    11,
+    'Sanción por Reincidencia',
+    'Tres faltas leves automáticas equivalen a una suspensión de un mes.'
   ),
   (
-    'Limpieza Post-Operativa',
-    'Las herramientas mecánicas (taladros, amoladoras) deben devolverse libres de polvo y viruta metálica.',
-    DATE_SUB(NOW(), INTERVAL 310 DAY)
+    12,
+    'Uso de Software',
+    'Prohibida la instalación de software sin licencia en notebooks prestadas.'
+  ),
+  (
+    13,
+    'Reporte de Averías',
+    'Obligación de declarar cualquier comportamiento anómalo del hardware.'
+  ),
+  (
+    14,
+    'Fines Comerciales',
+    'Queda terminantemente prohibido usar los equipos para lucro privado.'
+  ),
+  (
+    15,
+    'Verificación de Identidad',
+    'El personal exigirá acreditación física antes de cada entrega.'
+  ),
+  (
+    16,
+    'Puntualidad Retiro',
+    'Reservas aprobadas expiran si no se retiran dentro de las 24 horas.'
+  ),
+  (
+    17,
+    'Cuidado Multimedia',
+    'Los proyectores deben dejarse enfriar antes de ser guardados en el estuche.'
+  ),
+  (
+    18,
+    'Norma de Calibración',
+    'No alterar los precintos de calibración de los osciloscopios.'
+  ),
+  (
+    19,
+    'Almacenamiento de Datos',
+    'El sistema borra los perfiles locales de las PCs al ser devueltas.'
+  ),
+  (
+    20,
+    'Fuerza Mayor',
+    'En contingencias edilicias, los plazos de devolución quedan congelados.'
+  ),
+  (
+    21,
+    'Uso de Baterías',
+    'Cargar los dispositivos únicamente con los transformadores provistos.'
+  ),
+  (
+    22,
+    'Reserva de Espacios',
+    'La reserva del equipo no garantiza el espacio físico en el laboratorio.'
+  ),
+  (
+    23,
+    'Auditorías de Stock',
+    'El pañol permanecerá cerrado los últimos dos días del ciclo lectivo.'
+  ),
+  (
+    24,
+    'Firmas Digitales',
+    'Las aprobaciones vía sistema tienen validez de declaración jurada.'
+  ),
+  (
+    25,
+    'Modificaciones de la Norma',
+    'La Secretaría Académica se reserva el derecho de alterar los plazos.'
   );
-
