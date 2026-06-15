@@ -1,0 +1,70 @@
+<div class="auth-card">
+  <div class="auth-header">
+    <h1>
+      {% if es_crear_cuenta %}
+        Crear cuenta
+      {% else %}
+        Iniciar sesión
+      {% endif %}
+    </h1>
+    <p>Bienvenido a la comunidad de Biblioteca FIUBA</p>
+    {% include 'componentes/mensaje_de_error.html' %}
+  </div>
+  <form action="{{ url_for('publico.crear_cuenta_post') if es_crear_cuenta else url_for('publico.iniciar_sesion_post') }}"
+        method="POST"
+        class="data-group">
+    {% if es_crear_cuenta %}
+      <div class="data-group">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" class="auth-input" required>
+      </div>
+    {% endif %}
+    <div class="data-group">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" name="email" class="auth-input" required>
+    </div>
+    {% if es_crear_cuenta %}
+      <div class="data-group">
+        <label for="carrera">Carrera</label>
+        <select id="carrera" name="carrera" class="auth-input" required>
+          <option value="Desconocido">-</option>
+          <option value="Ingeniería Civil">Ingeniería Civil</option>
+          <option value="Ingeniería en Alimentos">Ingeniería en Alimentos</option>
+          <option value="Ingeniería en Energía Eléctrica">Ingeniería en Energía Eléctrica</option>
+          <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+          <option value="Ingeniería en Agrimensura">Ingeniería en Agrimensura</option>
+          <option value="Ingeniería en Informática">Ingeniería en Informática</option>
+          <option value="Ingeniería en Petróleo">Ingeniería en Petróleo</option>
+          <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+          <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
+          <option value="Ingeniería Naval">Ingeniería Naval</option>
+          <option value="Ingeniería Química">Ingeniería Química</option>
+          <option value="Lic. en Análisis de Sistemas">Lic. en Análisis de Sistemas</option>
+          <option value="Bioingeniería">Bioingeniería</option>
+        </select>
+      </div>
+    {% endif %}
+    <div class="data-group">
+      <label for="contrasenia">Contraseña</label>
+      <input type="password"
+             id="contrasenia"
+             name="contrasenia"
+             class="auth-input"
+             required />
+    </div>
+    <button type="submit" class="auth-btn-nav">
+      {% if es_crear_cuenta %}
+        Crear Cuenta
+      {% else %}
+        Iniciar sesión
+      {% endif %}
+    </button>
+  </form>
+  <p class="auth-alt-option">
+    {% if es_crear_cuenta %}
+      ¿Ya tienes cuenta? <a href="{{ url_for('publico.iniciar_sesion') }}">Inicia sesión</a>
+    {% else %}
+      ¿No tienes cuenta? <a href="{{ url_for('publico.crear_cuenta') }}">Crear Cuenta</a>
+    {% endif %}
+  </p>
+</div>

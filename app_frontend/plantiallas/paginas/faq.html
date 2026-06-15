@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  <section class="faq">
+    <h1 class="text-center fw-bold mb-4">Preguntas Frecuentes (FAQ)</h1>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          ¿Cómo cancelo una reserva?
+          <i class="fa-solid fa-chevron-down faq-icon-caret"></i>
+        </button>
+        <div class="faq-answer">
+          Pódes hacerlo desde tu perfil de alumno o mediante el botón Cancelar incluido en el correo
+          de confirmacion del QR.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          ¿Qué pasa si pierdo el código QR?
+          <i class="fa-solid fa-chevron-down faq-icon-caret"></i>
+        </button>
+        <div class="faq-answer">
+          No te preocupes, podrás volver a generarlo o visualizarlo ingresando con tu usuario y
+          contraseña a la plataforma.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button type="button" class="faq-question">
+          ¿Puedo renovar una reserva activa?
+          <i class="fa-solid fa-chevron-down faq-icon-caret"></i>
+        </button>
+        <div class="faq-answer">Si, siempre y cuando no haya otros alumnos en lista de espera para ese mismo objeto.</div>
+      </div>
+      {% for item in datos %}
+        <div class="faq-item">
+          <button type="button" class="faq-question">
+            {{ item.titulo }}
+            <i class="fa-solid fa-chevron-down faq-icon-caret"></i>
+          </button>
+          <div class="faq-answer">{{ item.descripcion }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="faq-contact">
+      <p>¿No encontraste la respuesta que buscabas?</p>
+      <a href="mailto:biblioteca@fi.uba.ar" class="btn-inline">Contactate con nosotros</a>
+    </div>
+    {% include 'componentes/paginacion.html' %}
+  </section>
+{% endblock %}

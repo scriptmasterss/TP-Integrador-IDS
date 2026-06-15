@@ -1,0 +1,54 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='nueva_normativa' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Nueva normativa</span>
+  </div>
+  <div class="history-container reveal delay-1">
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    <div class="history-header">
+      <h2>Nueva normativa</h2>
+      <p class="text-muted">Cargá una nueva norma o regla de convivencia para el sistema.</p>
+    </div>
+    <form data-validate="admin-normativa"
+          class="admin-form"
+          method="POST"
+          action="{{ url_for('admin.nueva_normativa') }}">
+      <div class="data-grid">
+        <div class="data-group">
+          <label for="titulo">Título de la normativa</label>
+          <input id="titulo"
+                 type="text"
+                 name="titulo"
+                 class="admin-input"
+                 maxlength="100"
+                 required />
+        </div>
+        <div class="data-group">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion"
+                    name="descripcion"
+                    class="admin-input"
+                    rows="4"
+                    maxlength="255"
+                    required></textarea>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.dashboard') }}"
+           class="res-btn btn-secondary btn-inline">Cancelar</a>
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-file-signature"></i> Publicar normativa
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

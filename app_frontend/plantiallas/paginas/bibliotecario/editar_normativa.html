@@ -1,0 +1,70 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='normativa_detalle' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('bibliotecario.normativa') }}">Normativas</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Editar Normativa #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <form action="{{ url_for('bibliotecario.normativa_id_editar', id=datos.id) }}"
+          method="POST"
+          class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Editar Normativa <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Modifica el título y el alcance de las reglas o regulaciones institucionales.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label for="titulo"><i class="fa-solid fa-gavel"></i> Título</label>
+          <input type="text"
+                 id="titulo"
+                 name="titulo"
+                 class="auth-input"
+                 value="{{ datos.titulo if datos.titulo is not none else '' }}"
+                 maxlength="100">
+        </div>
+        <div class="data-group">
+          <label for="descripcion"><i class="fa-solid fa-align-left"></i> Descripción</label>
+          <input type="text"
+                 id="descripcion"
+                 name="descripcion"
+                 class="auth-input"
+                 value="{{ datos.descripcion if datos.descripcion is not none else '' }}"
+                 maxlength="255">
+        </div>
+      </div>
+      <div class="form-actions mt-4" style="display: flex; gap: 10px;">
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        <a href="{{ url_for('bibliotecario.normativa') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar la normativa</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.normativa') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

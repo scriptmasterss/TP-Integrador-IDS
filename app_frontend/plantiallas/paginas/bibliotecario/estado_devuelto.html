@@ -1,0 +1,103 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Bibliotecario{% endblock %}
+{% block sidebar_links %}
+  {% with activo='estado_devuelto' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Devoluciones con retraso</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Registro de Devoluciones</h2>
+    <p class="text-muted">Consulta de artículos devueltos fuera de término y sus condiciones.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Buscar por condiciones o ID reserva"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>ID Devolución</th>
+              <th>Reserva</th>
+              <th>Retraso</th>
+              <th>Condiciones</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in datos %}
+              <tr>
+                <td><span class="text-sm text-grey">#{{ d.id }}</span></td>
+                <td>
+                  <a href="{{ url_for('bibliotecario.reserva_id', id=d.id_reserva) }}"
+                     class="text-primary">
+                    <strong>Reserva #{{ d.id_reserva }}</strong>
+                  </a>
+                </td>
+                <td>
+                  <span class="badge {% if d.dias_retraso > 0 %}badge-danger{% else %}badge-success{% endif %}">
+                    {{ d.dias_retraso }} días
+                  </span>
+                </td>
+                <td>
+                  <span class="text-sm" title="{{ d.condiciones }}">{{ d.condiciones[:60] }}
+                    {% if d.condiciones|length > 60 %}...{% endif %}
+                  </span>
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('bibliotecario.estado_devuelto_id', id=d.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle devolución">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('bibliotecario.editar_estado_devuelto', id=d.id) }}"
+                     class="btn-icon"
+                     title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </a>
+                  <form action="{{ url_for('bibliotecario.estado_devuelto_id_eliminar', id=d.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-clipboard-check empty-icon"></i>
+        <h3>Sin registros de devoluciones</h3>
+        <p>No se encontraron devoluciones que coincidan con la búsqueda.</p>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

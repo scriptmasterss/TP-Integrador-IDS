@@ -1,0 +1,71 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='usuario_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.usuario') }}">Usuarios</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle Usuario #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Perfil del Usuario <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Información detallada del registro de usuario.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label><i class="fa-solid fa-user"></i> Nombre</label>
+          <div class="data-value">{{ datos.nombre }}</div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-envelope"></i> Email</label>
+          <div class="data-value">{{ datos.email }}</div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-id-badge"></i> Rol</label>
+          <div class="data-value text-capitalize">{{ datos.rol }}</div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-graduation-cap"></i> Carrera</label>
+          <div class="data-value">{{ datos.carrera }}</div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-circle-check"></i> Estado</label>
+          <div class="data-value">
+            <span class="badge {{ 'badge-success' if datos.activo else 'badge-danger' }}">
+              {{ 'Activo' if datos.activo else 'Inactivo' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.usuario') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el detalle del usuario</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.usuario') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

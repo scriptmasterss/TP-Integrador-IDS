@@ -1,0 +1,164 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Alumno{% endblock %}
+{% block sidebar_links %}
+  {% with activo='historial' %}
+    {% include 'componentes/links_alumno.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('alumno.perfil') }}">Alumno</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Historial de reservas</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Historial de Reservas</h2>
+    <p class="text-muted">Consulta el registro completo de tus reservas pasadas.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Nombre del articulo"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i>
+            Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="estado_reserva">Estado</label>
+              <select id="estado_reserva" name="estado_reserva" class="admin-select">
+                <option value="" {% if estado_reserva == '' %}selected{% endif %}>Todos</option>
+                <option value="devuelto"
+                        {% if estado_reserva == 'devuelto' %}selected{% endif %}>devuelto</option>
+                <option value="rechazado"
+                        {% if estado_reserva == 'rechazado' %}selected{% endif %}>rechazado</option>
+                <option value="cancelado"
+                        {% if estado_reserva == 'cancelado' %}selected{% endif %}>cancelado</option>
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="fecha_retiro">Fecha retiro</label>
+              <input id="fecha_retiro"
+                     type="date"
+                     name="fecha_retiro"
+                     class="admin-input"
+                     value="{{ fecha_retiro }}" />
+            </div>
+            <div class="data-group">
+              <label for="fecha_regreso">Fecha regreso</label>
+              <input id="fecha_regreso"
+                     type="date"
+                     name="fecha_regreso"
+                     class="admin-input"
+                     value="{{ fecha_regreso }}" />
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Aplicar filtros
+              </button>
+              {% if filtros_activos %}
+                <a href="{{ url_for('alumno.historial') }}"
+                   class="res-btn btn-secondary btn-inline">
+                  <i class="fa-solid fa-rotate-left"></i> Limpiar
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Busqueda: {{ q }}</span>{% endif %}
+        {% if estado_reserva %}<span>Estado: {{ estado_reserva }}</span>{% endif %}
+        {% if fecha_retiro %}<span>Desde: {{ fecha_retiro }}</span>{% endif %}
+        {% if fecha_regreso %}<span>Hasta: {{ fecha_regreso }}</span>{% endif %}
+        <a href="{{ url_for('alumno.historial') }}">Limpiar</a>
+      </div>
+      {% if error %}<p class="text-danger fw-bold mt-3">{{ error }}</p>{% endif %}
+    </form>
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Fecha de la reserva</th>
+              <th>Equipo / Material</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for reserva in datos %}
+              <tr>
+                <td>
+                  <div class="date-cell">
+                    <i class="fa-regular fa-calendar"></i>
+                    <small>
+                      <strong>Retiro:</strong> {{ reserva.fecha_retiro }} {{ reserva.hora_retiro }}
+                      <br>
+                      <strong>Regreso:</strong> {{ reserva.fecha_regreso }} {{ reserva.hora_regreso }}
+                      {% if reserva.penalizacion_activa %}
+                        <br>
+                        <span class="badge-warning">Penalizado</span>
+                        <span>Motivo: {{ reserva.motivo_penalizacion }}</span>
+                      {% endif %}
+                    </small>
+                  </div>
+                </td>
+                <td>
+                  <strong>{{ reserva.nombre }}</strong>
+                  <br />
+                  <span class="text-sm text-grey">ID: {{ reserva.id_articulo }}</span>
+                </td>
+                <td><span class="badge {% if reserva.estado_reserva == 'pendiente' %}badge-warning{% elif reserva.estado_reserva == 'devuelto' %}badge-success{% else %}badge-info{% endif %}">{{ reserva.estado_reserva }}</span></td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('alumno.reserva_id', id=reserva.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('alumno.nueva_reserva', id_articulo=reserva.id_articulo, nombre_articulo=reserva.nombre) }}"
+                     class="btn-icon"
+                     title="Volver a reservar">
+                    <i class="fa-solid fa-rotate-right"></i>
+                  </a>
+                  {% if reserva.estado_reserva in ('pendiente', 'aprobado') %}
+                    <form action="{{ url_for('alumno.reserva_id_eliminar', id=reserva.id) }}"
+                          method="POST">
+                      <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-clock-rotate-left empty-icon"></i>
+        <h3>No hay reservas pasadas que coincidan con los filtros</h3>
+        <p>Sin Resultados</p>
+        <p>Intenta ajustar los criterios de busqueda o limpiar los filtros.</p>
+        <a href="{{ url_for('alumno.historial') }}"
+           class="res-btn btn-secondary mt-3 badge-lg">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

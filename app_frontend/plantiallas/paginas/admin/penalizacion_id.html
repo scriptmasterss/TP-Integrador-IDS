@@ -1,0 +1,85 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='penalizacion_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.penalizacion') }}">Penalizaciones</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle Penalización #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Detalle de Penalización <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Información sobre el registro de sanción y vigencia.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label><i class="fa-solid fa-triangle-exclamation"></i> Severidad</label>
+          <div class="data-value">
+            <span class="badge {{ 'badge-danger' if datos.severidad == 'alta' else 'badge-warning' }}">
+              {{ datos.severidad|capitalize }}
+            </span>
+          </div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-toggle-on"></i> Estado</label>
+          <div class="data-value">
+            <span class="badge {{ 'badge-success' if datos.activa else 'badge-secondary' }}">
+              {{ 'Activa' if datos.activa else 'Finalizada' }}
+            </span>
+          </div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-user"></i> Usuario</label>
+          <a href="{{ url_for('admin.usuario_id', id=datos.id_usuario) }}"
+             class="data-value">ID#{{ datos.id_usuario }}</a>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-book"></i> Reserva Relacionada</label>
+          <a href="{{ url_for('admin.reserva_id', id=datos.id_reserva) }}"
+             class="data-value">ID#{{ datos.id_reserva }}</a>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-calendar-days"></i> Inicio</label>
+          <div class="data-value">{{ datos.fecha_inicio }} {{ datos.hora_inicio }}</div>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-calendar-check"></i> Fin</label>
+          <div class="data-value">{{ datos.fecha_fin }} {{ datos.hora_fin }}</div>
+        </div>
+        <div class="data-group full-width">
+          <label><i class="fa-solid fa-align-left"></i> Motivo</label>
+          <div class="data-value">{{ datos.motivo }}</div>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.penalizacion') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el detalle de la penalización</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.penalizacion') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

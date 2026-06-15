@@ -1,0 +1,179 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Bibliotecario{% endblock %}
+{% block sidebar_links %}
+  {% with activo='reserva' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Gestión de Reservas</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Panel de Reservas</h2>
+    <p class="text-muted">Administración y seguimiento del estado de las reservas.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Nombre del artículo"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i> Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="estado_reserva">Estado</label>
+              <select id="estado_reserva" name="estado_reserva" class="admin-select">
+                <option value="">Todos</option>
+                {% for est in ['pendiente', 'aprobado', 'entregado', 'devuelto', 'rechazado', 'cancelado'] %}
+                  <option value="{{ est }}" {% if estado_reserva == est %}selected{% endif %}>{{ est|capitalize }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="fecha_retiro">Fecha retiro</label>
+              <input id="fecha_retiro"
+                     type="date"
+                     name="fecha_retiro"
+                     class="admin-input"
+                     value="{{ fecha_retiro }}" />
+            </div>
+            <div class="data-group">
+              <label for="fecha_regreso">Fecha regreso</label>
+              <input id="fecha_regreso"
+                     type="date"
+                     name="fecha_regreso"
+                     class="admin-input"
+                     value="{{ fecha_regreso }}" />
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Aplicar
+              </button>
+              <a class="res-btn btn-secondary btn-inline"
+                 href="{{ url_for(request.endpoint) }}">
+                <i class="fa-solid fa-filter"></i> Limpiar
+              </a>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Búsqueda: {{ q }}</span>{% endif %}
+        {% if estado_reserva %}
+          <span class="badge {% if estado_reserva == 'pendiente' %}badge-danger{% elif estado_reserva == 'devuelto' %}badge-warning{% else %}badge-success{% endif %}">
+            {{ estado_reserva|capitalize }}
+          </span>
+        {% endif %}
+        {% if fecha_retiro %}<span>Fecha retiro: {{ fecha_retiro }}</span>{% endif %}
+        {% if fecha_regreso %}<span>Fecha regreso: {{ fecha_regreso }}</span>{% endif %}
+        {% if q or fecha_retiro or fecha_regreso %}<a href="{{ url_for('bibliotecario.usuario') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Artículo</th>
+              <th>Usuario</th>
+              <th>Fechas</th>
+              <th>Estado</th>
+              <th>Penalización</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in datos %}
+              <tr>
+                <td>
+                  <strong>{{ r.nombre }}</strong>
+                  <br>
+                  <small class="text-grey">Reserva #{{ r.id }}</small>
+                </td>
+                <td>
+                  <a href="{{ url_for('bibliotecario.usuario_id', id=r.id_usuario) }}"
+                     class="text-primary">
+                    <i class="fa-solid fa-user"></i> ID: {{ r.id_usuario }}
+                  </a>
+                </td>
+                <td>
+                  <small>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> {{ r.fecha_retiro }} {{ r.hora_retiro }}
+                    <br>
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> {{ r.fecha_regreso }} {{ r.hora_regreso }}
+                  </small>
+                </td>
+                <td>
+                  <span class="badge {% if r.estado_reserva == 'pendiente' %}badge-danger{% elif r.estado_reserva == 'devuelto' %}badge-warning{% else %}badge-success{% endif %}">
+                    {{ r.estado_reserva|capitalize }}
+                  </span>
+                </td>
+                <td>
+                  {% if r.penalizacion_activa %}
+                    <div class="penalization-info">
+                      <span class="badge badge-danger" title="{{ r.motivo_penalizacion }}">{{ r.severidad_penalizacion|capitalize }}</span>
+                      <a href="{{ url_for('bibliotecario.penalizacion_id', id=r.id_penalizacion) }}"
+                         class="btn-icon"
+                         title="Ver detalles penalización">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                      </a>
+                      <br>
+                      <small class="text-xs">{{ r.fecha_inicio_penalizacion }} al {{ r.fecha_fin_penalizacion }}</small>
+                    </div>
+                  {% else %}
+                    <span class="text-grey text-sm">--</span>
+                  {% endif %}
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('bibliotecario.reserva_id', id=r.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('bibliotecario.editar_reserva', id=r.id) }}"
+                     class="btn-icon"
+                     title="Editar">
+                    <i class="fa-solid fa-pencil"></i>
+                  </a>
+                  <form action="{{ url_for('bibliotecario.reserva_id_eliminar', id=r.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-calendar-xmark empty-icon"></i>
+        <h3>No hay reservas encontradas</h3>
+        <a href="{{ url_for('bibliotecario.reserva') }}"
+           class="res-btn btn-secondary mt-3">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

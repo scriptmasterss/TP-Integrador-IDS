@@ -1,0 +1,55 @@
+{% extends 'layouts/base_dashboard.html' %}
+{% block usuario_name %}Profesor{% endblock %}
+{% block sidebar_links %}
+  {% with activo='penalizacion' %}
+    {% include 'componentes/links_profesor.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('profesor.perfil') }}">Profesor</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Penalizaciones</span>
+  </div>
+  <h2 class="reveal">Mis Penalizaciones</h2>
+  {% with error=error %}
+    {% include 'componentes/mensaje_de_error.html' %}
+  {% endwith %}
+  {% if datos %}
+    <div class="history-table-wrapper reveal delay-1">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Motivo</th>
+            <th>Severidad</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for penalizacion in datos %}
+            <tr>
+              <td>{{ penalizacion.motivo }}</td>
+              <td>
+                <span class="badge {% if penalizacion.severidad == 'alta' %}badge-danger {% elif penalizacion.severidad == 'media' %}badge-warning {% else %}badge-success{% endif %}">
+                  {{ penalizacion.severidad or 'N/A' }}
+                </span>
+              </td>
+              <td>{{ penalizacion.fecha_inicio }}</td>
+              <td>{{ penalizacion.fecha_fin }}</td>
+              <td>{{ 'Activa' if penalizacion.activa else 'Inactiva' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% include 'componentes/paginacion.html' %}
+    </div>
+  {% else %}
+    <div class="empty-state reveal">
+      <i class="fa-solid fa-circle-check empty-icon text-success"></i>
+      <h3>¡No tenés penalizaciones vigentes!</h3>
+      <p>Tu historial está limpio.</p>
+    </div>
+  {% endif %}
+{% endblock %}

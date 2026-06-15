@@ -1,0 +1,78 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='reserva_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.reserva') }}">Reservas</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Detalle de la Reserva <span class="text-muted">#{{ datos.id }}</span></h2>
+        <h3><a href="{{ url_for('admin.usuario_id', id=datos.id_usuario) }}">Autoria del Usuario#{{ datos.id_usuario }}</a></h3>
+        <br>
+        <p class="text-muted">Información completa y código QR para el retiro y regreso.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label>Estado</label>
+          <div class="data-value">
+            <span class="badge badge-success">{{ datos.estado_reserva }}</span>
+          </div>
+        </div>
+        <div class="data-group">
+          <label>Fecha de Retiro</label>
+          <div class="data-value">{{ datos.fecha_retiro }}</div>
+        </div>
+        <div class="data-group">
+          <label>Fecha de Regreso</label>
+          <div class="data-value">{{ datos.fecha_regreso }}</div>
+        </div>
+        {% if datos.id_penalizacion %}
+          <div class="data-group">
+            <label>Penalizacion Asociada</label>
+            <a href="{{ url_for('admin.penalizacion_id', id=datos.id_penalizacion) }}"
+               class="data-value"
+               title="Ver detalles penalización">
+              ID#{{ datos.id_penalizacion }}
+              <span class="badge badge-danger" title="{{ datos.motivo_penalizacion }}">{{ datos.severidad_penalizacion|capitalize }}</span>
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      <div class="qr-section mt-4">
+        <p class="fw-bold mb-2">Código QR para retiro y regreso</p>
+        <img src="{{ qr_src }}" alt="QR de reserva" class="qr-image" />
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.reserva') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el detalle</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.reserva') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

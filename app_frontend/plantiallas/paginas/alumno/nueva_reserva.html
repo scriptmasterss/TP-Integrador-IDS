@@ -1,0 +1,67 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Alumno') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='nueva_reserva' %}
+    {% include 'componentes/links_alumno.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('alumno.perfil') }}">Alumno</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Nueva reserva</span>
+  </div>
+  <div class="history-container reveal delay-1">
+    {% with error=error %}
+      {% include 'componentes/mensaje_de_error.html' %}
+    {% endwith %}
+    <div class="history-header">
+      <h2>Nueva reserva</h2>
+      <p class="text-muted">Seleccioná el artículo y definí el horario para tu reserva.</p>
+    </div>
+    <form data-validate="alumno-reserva"
+          class="admin-form"
+          method="POST"
+          action="{{ url_for('alumno.nueva_reserva') }}">
+      <div class="data-grid">
+        <input id="id_articulo"
+               type="hidden"
+               name="id_articulo"
+               value="{{ id_articulo }}"
+               required />
+        <div class="data-group">
+          <label for="nombre">Artículo</label>
+          <input id="nombre"
+                 type="text"
+                 name="nombre_articulo"
+                 class="admin-input"
+                 value="{{ nombre_articulo }}"
+                 disabled
+                 required />
+        </div>
+        <div class="data-group">
+          <label for="fecha">Fecha</label>
+          <input id="fecha" type="date" name="fecha" class="admin-input" required />
+        </div>
+        <div class="data-group">
+          <label for="desde">Desde</label>
+          <input id="desde" type="time" name="desde" class="admin-input" required />
+        </div>
+        <div class="data-group">
+          <label for="hasta">Hasta</label>
+          <input id="hasta" type="time" name="hasta" class="admin-input" required />
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('alumno.dashboard') }}"
+           class="res-btn btn-secondary btn-inline">Cancelar</a>
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-calendar-check"></i> Confirmar reserva
+        </button>
+      </div>
+    </form>
+    {% if fetch_error %}
+      <p class="text-danger fw-bold mt-3">{{ fetch_error }}</p>
+    {% endif %}
+  </div>
+{% endblock %}

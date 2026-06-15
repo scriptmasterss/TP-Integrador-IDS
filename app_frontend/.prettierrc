@@ -11,6 +11,7 @@
   "arrowParens": "always",
   "bracketSameLine": true,
   "bracketSpacing": true,
+  "cssDeclarationSorter": "alphabetical",
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "css",
   "printWidth": 100,
@@ -19,5 +20,6 @@
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "es5",
-  "useTabs": false
+  "useTabs": false,
+  "jsxSelfClosing": false
 }

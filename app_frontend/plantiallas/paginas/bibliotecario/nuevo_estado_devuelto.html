@@ -1,0 +1,56 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='nuevo_estado_devuelto' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Registrar devolución</span>
+  </div>
+  <div class="history-container reveal delay-1">
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    <div class="history-header">
+      <h2>Registrar devolución</h2>
+      <p class="text-muted">Completá los detalles de la devolución de la reserva.</p>
+    </div>
+    <form data-validate="bibliotecario-estado-devuelto"
+          class="admin-form"
+          method="POST"
+          action="{{ url_for('bibliotecario.nuevo_estado_devuelto') }}">
+      <div class="data-grid">
+        <input type="hidden" name="id_reserva" value="{{ id_reserva }}" />
+        <div class="data-group">
+          <label for="dias_retraso">Días de retraso</label>
+          <input id="dias_retraso"
+                 type="number"
+                 name="dias_retraso"
+                 class="admin-input"
+                 value="0"
+                 min="0"
+                 required />
+        </div>
+        <div class="data-group">
+          <label for="condiciones">Condiciones del artículo</label>
+          <textarea id="condiciones"
+                    name="condiciones"
+                    class="admin-input"
+                    rows="3"
+                    maxlength="255"
+                    placeholder="Ej: Entregado en perfecto estado."></textarea>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.dashboard') }}"
+           class="res-btn btn-secondary btn-inline">Cancelar</a>
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-box-open"></i> Confirmar devolución
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

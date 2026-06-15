@@ -1,0 +1,26 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  <br />
+  <main class="normas-container history-container">
+    <div class="history-header">
+      <h1>Normativa Institucional</h1>
+      <p>Reglas y políticas vigentes para el uso de la biblioteca y equipos.</p>
+    </div>
+    <div class="normas-content">
+      {% for normativa in datos %}
+        <article class="norma-item">
+          <h3>{{ normativa.titulo }}</h3>
+          <p>{{ normativa.descripcion }}</p>
+        </article>
+      {% endfor %}
+      {% with error=error %}
+        {% include 'componentes/mensaje_de_error.html' %}
+      {% endwith %}
+      {% if datos|length == 0 %}
+        <p>No hay normas institucionales disponibles en este momento.</p>
+      {% endif %}
+      {% include 'componentes/paginacion.html' %}
+    </div>
+  </main>
+  <br />
+{% endblock %}

@@ -1,0 +1,52 @@
+<p class="text-muted mt-3">Mostrando página {{ pagina }} de {{ paginas_totales }}</p>
+{% if paginas_totales > 1 %}
+  <div class="pagination-container">
+    <ul class="pagination">
+      <li>
+        {% set parametros_para_anterios = request.args.to_dict() %}
+        {% set _ = parametros_para_anterios.update({'pagina': pagina - 1}) %}
+        <a href="{{ url_for(request.endpoint, **parametros_para_anterios) if pagina > 1 else '#' }}"
+           class="page-link {% if pagina <= 1 %}disabled{% endif %}">
+          <i class="fa-solid fa-chevron-left"></i>
+        </a>
+      </li>
+      {# Lógica de RANGO (2 a cada lado) #}
+      {% set start = [1, pagina - 2] | max %}
+      {% set end = [paginas_totales, pagina + 2] | min %}
+      {# PRIMERA página y puntos #}
+      {% if start > 1 %}
+        {% set parametros_para_primera = request.args.to_dict() %}
+        {% set _ = parametros_para_primera.update({'pagina': 1}) %}
+        <li><a href="{{ url_for(request.endpoint, **parametros_para_primera) }}"
+   class="page-link">1</a></li>
+        {% if start > 2 %}<li><span class="page-dots">...</span></li>{% endif %}
+      {% endif %}
+      {# Números del rango #}
+      {% for p in range(start, end + 1) %}
+        {% set parametros_para_pagina_n = request.args.to_dict() %}
+        {% set _ = parametros_para_pagina_n.update({'pagina': p}) %}
+        <li>
+          <a href="{{ url_for(request.endpoint, **parametros_para_pagina_n) }}"
+             class="page-link {% if p == pagina %}active{% endif %}">{{ p }}</a>
+        </li>
+      {% endfor %}
+      {# ÚLTIMA página y puntos #}
+      {% if end < paginas_totales %}
+        {% if end < paginas_totales - 1 %}<li><span class="page-dots">...</span></li>{% endif %}
+        {% set parametros_para_ultima = request.args.to_dict() %}
+        {% set _ = parametros_para_ultima.update({'pagina': paginas_totales}) %}
+        <li><a href="{{ url_for(request.endpoint, **parametros_para_ultima) }}"
+   class="page-link">{{ paginas_totales }}</a></li>
+      {% endif %}
+      {# Botón SIGUIENTE #}
+      <li>
+        {% set parametros_para_siguiente = request.args.to_dict() %}
+        {% set _ = parametros_para_siguiente.update({'pagina': pagina + 1}) %}
+        <a href="{{ url_for(request.endpoint, **parametros_para_siguiente) if pagina < paginas_totales else '#' }}"
+           class="page-link {% if pagina >= paginas_totales %}disabled{% endif %}">
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}

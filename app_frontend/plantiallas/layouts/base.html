@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+  {% include 'componentes/head.html' %}
+  <body>
+    <header class="navbar">
+      <div class="navbar-top">
+        <div class="navbar-logo">
+          <a href="https://www.fi.uba.ar/" target="_blank">
+            <img src="{{ url_for('static', filename='imagenes/logo_fiuba.png') }}"
+                 alt="Logo FIUBA"
+                 class="navbar-logo-img" />
+          </a>
+        </div>
+        <div class="navbar-social">
+          <a href="https://www.facebook.com/ingenieriauba/"
+             target="_blank"
+             title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://x.com/ingenieriauba"
+             target="_blank"
+             title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="https://www.instagram.com/ingenieriauba/"
+             target="_blank"
+             title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.youtube.com/usuario/FIUBAoficial"
+             target="_blank"
+             title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="https://www.linkedin.com/company/facultad-de-ingenieria---uba/"
+             target="_blank"
+             title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="navbar-bottom">
+        <nav class="nav-links">
+          <a href="{{ url_for('publico.index') }}">Información general</a>
+          <a href="{{ url_for('publico.normas') }}">Normas</a>
+          <a href="{{ url_for('publico.catalogo') }}">Catálogo</a>
+          <a href="{{ url_for('publico.faq') }}">Preguntas Frecuentes</a>
+        </nav>
+        <div class="auth-buttons">
+          {% if session.get("rol") %}
+            <button onclick="window.location.href='{{ url_for('publico.iniciar_sesion') }}'"
+                    class="login-btn">IR AL PANEL</button>
+          {% else %}
+            <button onclick="window.location.href='{{ url_for('publico.iniciar_sesion') }}'"
+                    class="login-btn">INICIA SESIÓN</button>
+            <button onclick="window.location.href='{{ url_for('publico.crear_cuenta') }}'"
+                    class="auth-btn-nav">REGISTRARSE</button>
+          {% endif %}
+        </div>
+      </div>
+    </header>
+    {% block content %}{% endblock %}
+    <footer class="footer">
+      <div class="footer-info">
+        <strong>Facultad de Ingeniería de la Universidad de Buenos Aires</strong>
+        <p>Av. Paseo Colón 850 - C1063ACV - Buenos Aires - Argentina</p>
+        <p>Website desarrollado por los estudiantes de Ingeniería Informática,</p>
+        <p>grupo ScriptMasters de la materia IDS.</p>
+      </div>
+      <div class="footer-logo">
+        <img src="{{ url_for('static', filename='imagenes/logo_fiuba_blanco.png') }}"
+             alt="Logo FIUBA Blanco" />
+      </div>
+    </footer>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>

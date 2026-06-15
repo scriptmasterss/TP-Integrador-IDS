@@ -1,0 +1,66 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='estado_devuelto_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.estado_devuelto') }}">Devoluciones</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle Devolución #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Detalle de Devolución <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Registro de condiciones y tiempos de entrega.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label><i class="fa-solid fa-book"></i> Reserva Asociada</label>
+          <a href="{{ url_for('admin.reserva_id', id=datos.id_reserva) }}"
+             class="data-value">ID#{{ datos.id_reserva }}</a>
+        </div>
+        <div class="data-group">
+          <label><i class="fa-solid fa-clock"></i> Días de Retraso</label>
+          <div class="data-value">
+            {% if datos.dias_retraso > 0 %}
+              <span class="badge badge-danger">{{ datos.dias_retraso }} días</span>
+            {% else %}
+              <span class="badge badge-success">Entregado a tiempo</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="data-group full-width">
+          <label><i class="fa-solid fa-clipboard-check"></i> Condiciones de entrega</label>
+          <div class="data-value">{{ datos.condiciones }}</div>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.estado_devuelto') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el detalle de la devolución</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.estado_devuelto') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

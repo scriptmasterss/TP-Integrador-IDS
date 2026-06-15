@@ -1,0 +1,55 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='normativa_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.normativa') }}">Normativas</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Detalle de Normativa <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Información y lineamientos registrados.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group full-width">
+          <label><i class="fa-solid fa-heading"></i> Título</label>
+          <div class="data-value fs-4 fw-bold">{{ datos.titulo }}</div>
+        </div>
+        <div class="data-group full-width">
+          <label><i class="fa-solid fa-file-lines"></i> Descripción</label>
+          <div class="data-value description-text">{{ datos.descripcion | safe }}</div>
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.normativa') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar la normativa</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.normativa') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  <main class="auth-container">
+    {% with es_crear_cuenta = True %}
+      {% include "componentes/auth-card.html" %}
+    {% endwith %}
+  </main>
+{% endblock %}

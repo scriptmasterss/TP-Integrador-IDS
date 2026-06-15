@@ -1,0 +1,94 @@
+{% extends "layouts/base_dashboard.html" %}
+{% set datos = datos or {} %}
+{% block usuario_name %}{{ (datos.nombre) | default("Admin") }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='perfil' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Perfil</span>
+  </div>
+  <div class="profile-header reveal">
+    <h2 class="mt-0 mb-1">Mi Perfil</h2>
+    <p class="text-muted">Consulta y gestiona tu información personal en el sistema.</p>
+    {% include 'componentes/mensaje_de_error.html' %}
+  </div>
+  <div class="profile-layout reveal delay-2">
+    <div class="profile-card user-card">
+      <div class="user-card-avatar">
+        <i class="fa-solid fa-user-graduate"></i>
+      </div>
+      <h3 class="user-card-name">{{ datos.nombre | default("Admin") }}</h3>
+      <span class="badge badge-success mb-3">Admin Regular</span>
+    </div>
+    <div class="profile-card data-card">
+      {% if exito %}
+        <div class="alert alert-success">
+          <i class="fa-solid fa-circle-check"></i> {{ exito }}
+        </div>
+      {% endif %}
+      {% if datos.penalizaciones %}
+        <div class="user-score-box">
+          <div class="score-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="score-details">
+            <span class="score-value">Con multas</span>
+            <span class="score-label">Tienes penalizaciones activas. Consulta la sección de penalizaciones para más detalles.</span>
+          </div>
+        </div>
+      {% endif %}
+      <br />
+      <h3>Información Personal</h3>
+      <div class="data-grid">
+        <div class="data-group">
+          <label>Nombre Completo</label>
+          <div class="data-value">{{ datos.nombre | default("-") }}</div>
+        </div>
+        <div class="data-group">
+          <label>Padrón / Legajo</label>
+          <div class="data-value">{{ datos.legajo | default("-") }}</div>
+        </div>
+        <div class="data-group">
+          <label>Correo Institucional</label>
+          <div class="data-value">{{ datos.email | default("—") }}</div>
+        </div>
+        <div class="data-group">
+          <label>Carrera</label>
+          <div class="data-value">{{ datos.carrera | default("-") }}</div>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <a href="#modalPassword" class="res-btn btn-secondary">
+          <i class="fa-solid fa-key"></i> Cambiar Contraseña
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="modalPassword" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock"></i> Cambiar Contraseña</h3>
+      </div>
+      <form method="POST"
+            action="{{ url_for('admin.cambiar_contrasena') }}">
+        <div class="form-group">
+          <label class="admin-label">Nueva Contraseña</label>
+          <input type="password"
+                 name="nueva_contrasena"
+                 required
+                 class="admin-input"
+                 placeholder="Ingresa tu nueva contraseña" />
+        </div>
+        <div class="modal-actions">
+          <a href="#" class="res-btn btn-secondary">Cancelar</a>
+          <button type="submit" class="res-btn btn-primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

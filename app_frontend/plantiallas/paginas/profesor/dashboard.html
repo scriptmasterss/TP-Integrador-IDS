@@ -1,0 +1,43 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}
+  {{ session.get('nombre', 'Profesor') }}
+{% endblock %}
+{% block sidebar_links %}
+  {% with activo='dashboard' %}
+    {% include 'componentes/links_profesor.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <h2 class="reveal">Panel Principal</h2>
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+  <div class="row">
+    <div class="card p-3">
+      <h4>Reservas Activas</h4>
+      <p>{{ datos.total_actual }}</p>
+    </div>
+    <div class="card p-3">
+      <h4>Reservas Historicas</h4>
+      <p>{{ datos.total_historicas }}</p>
+    </div>
+    {#
+    <div class="card p-3">
+      <h4>Score</h4>
+      <p>{{ dashboard.puntaje if dashboard.puntaje is defined else 'N/A' }}</p>
+    </div>
+    <div class="card p-3">
+      <h4>Alertas de Penalización</h4>
+      {% if dashboard.penalizaciones %}
+        <ul>
+          {% for p in dashboard.penalizaciones %}
+            <li class="text-danger">{{ p.motivo }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Sin alertas activas</p>
+      {% endif %}
+    </div>
+    #}
+  </div>
+{% endblock %}

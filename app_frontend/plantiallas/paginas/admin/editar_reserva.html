@@ -1,0 +1,113 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='reserva_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.reserva') }}">Reservas</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Editar Reserva #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <form action="{{ url_for('admin.reserva_id_editar', id=datos.id) }}"
+          method="POST"
+          class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Editar Reserva <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Modifica los estados, plazos de tiempo y vinculaciones de la reserva.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label for="id_usuario"><i class="fa-solid fa-user"></i> ID Usuario</label>
+          <input type="number"
+                 id="id_usuario"
+                 name="id_usuario"
+                 class="auth-input"
+                 value="{{ datos.id_usuario }}"
+                 required
+                 min="1">
+        </div>
+        <div class="data-group">
+          <label for="id_articulo"><i class="fa-solid fa-box"></i> ID Artículo</label>
+          <input type="number"
+                 id="id_articulo"
+                 name="id_articulo"
+                 class="auth-input"
+                 value="{{ datos.id_articulo }}"
+                 required
+                 min="1">
+        </div>
+        <div class="data-group">
+          <label for="estado_reserva"><i class="fa-solid fa-circle-info"></i> Estado de Reserva</label>
+          <select id="estado_reserva" name="estado_reserva" class="auth-input">
+            <option value="pendiente"
+                    {{ 'selected' if datos.estado_reserva == 'pendiente' }}>Pendiente
+            </option>
+            <option value="aprobado"
+                    {{ 'selected' if datos.estado_reserva == 'aprobado' }}>Aprobado
+            </option>
+            <option value="rechazado"
+                    {{ 'selected' if datos.estado_reserva == 'rechazado' }}>Rechazado
+            </option>
+            <option value="entregado"
+                    {{ 'selected' if datos.estado_reserva == 'entregado' }}>Entregado
+            </option>
+            <option value="devuelto"
+                    {{ 'selected' if datos.estado_reserva == 'devuelto' }}>Devuelto
+            </option>
+            <option value="cancelado"
+                    {{ 'selected' if datos.estado_reserva == 'cancelado' }}>Cancelado
+            </option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="fecha_retiro"><i class="fa-solid fa-calendar-plus"></i> Fecha de Retiro</label>
+          <input type="datetime-local"
+                 id="fecha_retiro"
+                 name="fecha_retiro"
+                 class="auth-input"
+                 value="{{ datos.fecha_retiro }}"
+                 required>
+        </div>
+        <div class="data-group">
+          <label for="fecha_regreso"><i class="fa-solid fa-calendar-check"></i> Fecha de Regreso</label>
+          <input type="datetime-local"
+                 id="fecha_regreso"
+                 name="fecha_regreso"
+                 class="auth-input"
+                 value="{{ datos.fecha_regreso }}"
+                 required>
+        </div>
+      </div>
+      <div class="form-actions mt-4" style="display: flex; gap: 10px;">
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        <a href="{{ url_for('admin.reserva') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar la reserva</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.reserva') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

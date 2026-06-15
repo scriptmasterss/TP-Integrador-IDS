@@ -1,0 +1,24 @@
+<li>
+  <a class="{{ 'activo' if activo == 'perfil' else '' }}"
+     href="{{ url_for('profesor.perfil') }}"><i class="fa-solid fa-user"></i> Perfil</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'reserva' else '' }}"
+     href="{{ url_for('profesor.reserva') }}"><i class="fa-solid fa-list-check"></i> Mis reservas</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nueva_reserva' else '' }}"
+     href="{{ url_for('profesor.nueva_reserva') }}"><i class="fa-solid fa-plus"></i> Nueva reserva</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'penalizacion' else '' }}"
+     href="{{ url_for('profesor.penalizacion') }}">
+    <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones
+  </a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'penalizacion' else '' }}"
+     href="{{ url_for('profesor.historial') }}">
+    <i class="fa-solid fa-clock"></i> Historial
+  </a>
+</li>

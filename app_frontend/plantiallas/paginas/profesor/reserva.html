@@ -1,0 +1,78 @@
+{% extends 'layouts/base_dashboard.html' %}
+{% block usuario_name %}Profesor{% endblock %}
+{% block sidebar_links %}
+  {% with activo='mis_reservas' %}
+    {% include 'componentes/links_profesor.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <h2 class="reveal">Mis Reservas</h2>
+  {% with error=error %}
+    {% include 'componentes/mensaje_de_error.html' %}
+  {% endwith %}
+  {% if datos %}
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Estado</th>
+            <th>Detalles</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reserva in datos %}
+            <tr>
+              <td><strong>{{ reserva.nombre }}</strong></td>
+              <td>
+                <span class="badge {% if reserva.estado_reserva == 'pendiente' %}badge-warning{% elif reserva.estado_reserva == 'devuelto' %}badge-success{% else %}badge-info{% endif %}">
+                  {{ reserva.estado_reserva | capitalize }}
+                </span>
+                {% if reserva.penalizacion_activa %}
+                  <br>
+                  <small class="badge badge-danger">Penalizado: {{ reserva.severidad_penalizacion }}</small>
+                {% endif %}
+              </td>
+              <td>
+                <small>
+                  <strong>Retiro:</strong> {{ reserva.fecha_retiro }} {{ reserva.hora_retiro }}
+                  <br>
+                  <strong>Regreso:</strong> {{ reserva.fecha_regreso }} {{ reserva.hora_regreso }}
+                  {% if reserva.penalizacion_activa %}
+                    <br>
+                    <span>Motivo: {{ reserva.motivo_penalizacion }}</span>
+                  {% endif %}
+                </small>
+              </td>
+              <td>
+                <div>
+                  <a href="{{ url_for('profesor.reserva_id', id=reserva.id) }}"
+                     class="res-btn btn-secondary"
+                     title="Ver Detalle">
+                    <i class="fa-solid fa-eye"></i> Detalles
+                  </a>
+                  {% if reserva.estado_reserva in ('pendiente', 'aprobado') %}
+                    <form action="{{ url_for('profesor.reserva_id_eliminar', id=reserva.id) }}"
+                          method="POST">
+                      <button type="submit" class="res-btn btn-secondary" title="Cancelar Reserva">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% include 'componentes/paginacion.html' %}
+    </div>
+  {% else %}
+    <div class="empty-state reveal">
+      <i class="icon-success fa-solid fa-circle-check empty-icon"></i>
+      <h3>¡No tenés reservas vigentes!</h3>
+      <p>Tu historial está limpio.</p>
+    </div>
+  {% endif %}
+{% endblock %}

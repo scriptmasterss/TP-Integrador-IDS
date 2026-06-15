@@ -1,0 +1,157 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Bibliotecario{% endblock %}
+{% block sidebar_links %}
+  {% with activo='penalizacion' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Penalizaciones</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Registro de Penalizaciones</h2>
+    <p class="text-muted">Control de sanciones aplicadas a usuarios por incumplimientos.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Buscar por motivo o ID usuario"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i> Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="activa">Estado</label>
+              <select id="activa" name="activa" class="admin-select">
+                <option value="">Todas</option>
+                <option value="1" {% if activa == '1' %}selected{% endif %}>Activas</option>
+                <option value="0" {% if activa == '0' %}selected{% endif %}>Finalizadas</option>
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="severidad">Severidad</label>
+              <select id="severidad" name="severidad" class="admin-select">
+                <option value="">Todas</option>
+                <option value="baja" {% if severidad == 'baja' %}selected{% endif %}>Baja</option>
+                <option value="media" {% if severidad == 'media' %}selected{% endif %}>Media</option>
+                <option value="alta" {% if severidad == 'alta' %}selected{% endif %}>Alta</option>
+              </select>
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Búsqueda: {{ q }}</span>{% endif %}
+        {% if estado_reserva %}
+          <span class="badge {% if estado_reserva == 'pendiente' %}badge-danger{% elif estado_reserva == 'devuelto' %}badge-warning{% else %}badge-success{% endif %}">
+            {{ estado_reserva|capitalize }}
+          </span>
+        {% endif %}
+        {% if fecha_retiro %}<span>Fecha retiro: {{ fecha_retiro }}</span>{% endif %}
+        {% if fecha_regreso %}<span>Fecha regreso: {{ fecha_regreso }}</span>{% endif %}
+        {% if q or fecha_retiro or fecha_regreso %}<a href="{{ url_for('bibliotecario.usuario') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Usuario / Reserva</th>
+              <th>Motivo y Duración</th>
+              <th>Severidad</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in datos %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('bibliotecario.usuario_id', id=p.id_usuario) }}"
+                     class="text-primary">
+                    <i class="fa-solid fa-user"></i>
+                    <strong>ID Usuario:</strong> {{ p.id_usuario }}
+                  </a>
+                  <br>
+                  <a href="{{ url_for('bibliotecario.reserva_id', id=p.id_reserva) }}"
+                     class="text-primary">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <small class="text-grey">Reserva vinculada: #{{ p.id_reserva }}</small>
+                  </a>
+                </td>
+                <td>
+                  <strong>{{ p.motivo }}</strong>
+                  <br>
+                  <small>
+                    <i class="fa-regular fa-calendar-alt"></i> {{ p.fecha_inicio }} {{ p.hora_inicio }}
+                    <i class="fa-solid fa-arrow-right"></i> {{ p.fecha_fin }} {{ p.hora_fin }}
+                  </small>
+                </td>
+                <td>
+                  <span class="badge {% if p.severidad == 'alta' %}badge-danger{% elif p.severidad == 'media' %}badge-warning{% else %}badge-info{% endif %}">
+                    {{ p.severidad|capitalize }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge {% if p.activa %}badge-success{% else %}badge-secondary{% endif %}">
+                    {{ 'Activa' if p.activa else 'Finalizada' }}
+                  </span>
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('bibliotecario.penalizacion_id', id=p.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('bibliotecario.editar_penalizacion', id=p.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-pencil"></i>
+                  </a>
+                  <form action="{{ url_for('bibliotecario.penalizacion_id_eliminar', id=p.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-user-slash empty-icon"></i>
+        <h3>No se encontraron penalizaciones</h3>
+        <p>No existen registros que coincidan con los criterios aplicados.</p>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+  <div class="auth-container">
+    <div class="logout-card">
+      <div class="user-card-avatar mb-3">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </div>
+      <h2 class="mb-1">Cerrando sesión...</h2>
+      <p class="text-muted">
+        Gracias por utilizar el sistema de la Biblioteca FIUBA. Serás redirigido en breve.
+      </p>
+      <a href="{{ url_for('publico.index') }}" class="res-btn btn-primary btn-inline mt-3">
+        <i class="fa-solid fa-house"></i> Volver al inicio
+      </a>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "{{ url_for('publico.index') }}";
+    }, 5000);
+  </script>
+{% endblock %}

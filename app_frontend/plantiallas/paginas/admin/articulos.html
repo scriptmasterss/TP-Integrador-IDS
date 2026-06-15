@@ -1,0 +1,159 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Admin{% endblock %}
+{% block sidebar_links %}
+  {% with activo='articulos' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Artículos</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Inventario de Artículos</h2>
+    <p class="text-muted">Gestión de stock, reparaciones y disponibilidad.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Nombre o ID del artículo"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i> Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="tipo">Tipo</label>
+              <select id="tipo" name="tipo" class="admin-select">
+                <option value="">Todos los tipos</option>
+                <option value="libros" {% if tipo == 'libros' %}selected{% endif %}>Libros</option>
+                <option value="equipos electrónicos"
+                        {% if tipo == 'equipos electrónicos' %}selected{% endif %}>Equipos Electrónicos</option>
+                <option value="herramientas"
+                        {% if tipo == 'herramientas' %}selected{% endif %}>Herramientas</option>
+                <option value="proyectores" {% if tipo == 'proyectores' %}selected{% endif %}>Proyectores</option>
+                <option value="Accesorios" {% if tipo == 'Accesorios' %}selected{% endif %}>Accesorios y Cables</option>
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="seccion">Sección</label>
+              <select id="seccion" name="seccion" class="admin-select">
+                <option value="">Todas las secciones</option>
+                {% for s in ['biblioteca', 'tecnología', 'bedelia', 'laboratorio', 'otros'] %}
+                  <option value="{{ s }}" {% if seccion == s %}selected{% endif %}>{{ s|capitalize }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="estado_reparacion">¿Requiere reparación?</label>
+              <select id="estado_reparacion"
+                      name="necesita_reparacion"
+                      class="admin-select">
+                <option value="">Todos</option>
+                <option value="1" {% if necesita_reparacion == '1' %}selected{% endif %}>Sí</option>
+                <option value="0" {% if necesita_reparacion == '0' %}selected{% endif %}>No</option>
+              </select>
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Búsqueda: {{ q }}</span>{% endif %}
+        {% if tipo %}<span>Tipo: {{ tipo }}</span>{% endif %}
+        {% if seccion %}<span>Sección: {{ seccion }}</span>{% endif %}
+        {% if q or tipo or seccion or necesita_reparacion %}<a href="{{ url_for('admin.articulos') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Artículo</th>
+              <th>Sección / Tipo</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in datos %}
+              <tr>
+                <td>
+                  <strong>{{ a.nombre }}</strong>
+                  <br>
+                  <small class="text-grey">ID: {{ a.id }}</small>
+                </td>
+                <td>
+                  <span class="text-sm">{{ a.seccion|capitalize }}</span>
+                  <br>
+                  <span class="text-xs text-muted">{{ a.tipo|capitalize }}</span>
+                </td>
+                <td>{{ a.stock }}</td>
+                <td>
+                  {% if a.necesita_reparacion %}
+                    <span class="badge badge-warning">Reparación</span>
+                  {% endif %}
+                  {% if not a.activo %}
+                    <span class="badge badge-danger">Inactivo</span>
+                  {% else %}
+                    <span class="badge badge-success">Disponible</span>
+                  {% endif %}
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('admin.articulo_id', id=a.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('admin.editar_articulo', id=a.id) }}"
+                     class="btn-icon"
+                     title="Editar">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                  <form action="{{ url_for('admin.articulo_id_eliminar', id=a.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-box-open empty-icon"></i>
+        <h3>No se encontraron artículos</h3>
+        <p>Ajusta los filtros o el buscador para encontrar lo que necesitas.</p>
+        <a href="{{ url_for('admin.articulos') }}"
+           class="res-btn btn-secondary mt-3">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

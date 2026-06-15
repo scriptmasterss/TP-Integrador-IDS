@@ -1,0 +1,48 @@
+<li>
+  <a class="{{ 'activo' if activo == 'perfil' else '' }}" 
+     href="{{ url_for('admin.perfil') }}"><i class="fa-solid fa-user"></i> Perfil</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'reserva' else '' }}" 
+     href="{{ url_for('admin.reserva') }}"><i class="fa-solid fa-calendar-check"></i> Reservas</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nueva_reserva' else '' }}" 
+     href="{{ url_for('admin.nueva_reserva') }}"><i class="fa-solid fa-calendar-plus"></i> Nueva reserva</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'normativa' else '' }}" 
+     href="{{ url_for('admin.normativa') }}"><i class="fa-solid fa-gavel"></i> Normativas</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nueva_normativa' else '' }}" 
+     href="{{ url_for('admin.nueva_normativa') }}"><i class="fa-solid fa-file-circle-plus"></i> Nueva Normativa</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'usuario' else '' }}" 
+     href="{{ url_for('admin.usuario') }}"><i class="fa-solid fa-users"></i> Usuarios</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nuevo_usuario' else '' }}" 
+     href="{{ url_for('admin.nuevo_usuario') }}"><i class="fa-solid fa-user-plus"></i> Nuevo Usuario</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'articulos' else '' }}" 
+     href="{{ url_for('admin.articulos') }}"><i class="fa-solid fa-boxes-stacked"></i> Artículos</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nuevo_articulo' else '' }}" 
+     href="{{ url_for('admin.nuevo_articulo') }}"><i class="fa-solid fa-plus"></i> Nuevo Artículo</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'penalizacion' else '' }}" 
+     href="{{ url_for('admin.penalizacion') }}"><i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'estado_devuelto' else '' }}" 
+     href="{{ url_for('admin.estado_devuelto') }}"><i class="fa-solid fa-rotate-left"></i> Devoluciones</a>
+</li>
+<li>
+  <a class="{{ 'activo' if activo == 'nuevo_estado_devuelto' else '' }}" 
+     href="{{ url_for('admin.nuevo_estado_devuelto') }}"><i class="fa-solid fa-circle-plus"></i> Nueva Devolución</a>
+</li>

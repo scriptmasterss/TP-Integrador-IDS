@@ -1,0 +1,137 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Admin{% endblock %}
+{% block sidebar_links %}
+  {% with activo='usuario' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Gestión de Usuarios</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Usuarios del Sistema</h2>
+    <p class="text-muted">Administra los usuarios registrados y sus permisos.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Nombre o email"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i> Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="rol">Rol</label>
+              <select id="rol" name="rol" class="admin-select">
+                <option value="">Todos los roles</option>
+                {% for r in ['admin', 'bibliotecario', 'profesor', 'alumno'] %}
+                  <option value="{{ r }}" {% if rol == r %}selected{% endif %}>{{ r|capitalize }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="carrera">Carrera</label>
+              <select id="carrera" name="carrera" class="admin-select">
+                <option value="">Todas las carreras</option>
+                {% for c in ['Ingeniería Civil', 'Ingeniería en Alimentos', 'Ingeniería en Energía Eléctrica', 'Ingeniería Electrónica', 'Ingeniería en Agrimensura', 'Ingeniería en Informática', 'Ingeniería en Petróleo', 'Ingeniería Industrial', 'Ingeniería Mecánica', 'Ingeniería Naval', 'Ingeniería Química', 'Lic. en Análisis de Sistemas', 'Bioingeniería', 'Desconocido'] %}
+                  <option value="{{ c }}" {% if carrera == c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Filtrar
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Búsqueda: {{ q }}</span>{% endif %}
+        {% if rol %}<span>Rol: {{ rol }}</span>{% endif %}
+        {% if carrera %}<span>Carrera: {{ carrera }}</span>{% endif %}
+        {% if q or rol or carrera %}<a href="{{ url_for('admin.usuario') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Información</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in datos %}
+              <tr>
+                <td>
+                  <strong>{{ u.nombre }}</strong>
+                  <br>
+                  <small class="text-grey">{{ u.email }}</small>
+                </td>
+                <td>
+                  <span class="badge badge-info">{{ u.rol }}</span>
+                  <div class="text-sm mt-1">{{ u.carrera }}</div>
+                </td>
+                <td>
+                  <span class="badge {% if u.activo %}badge-success{% else %}badge-danger{% endif %}">
+                    {{ 'Activo' if u.activo else 'Inactivo' }}
+                  </span>
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('admin.usuario_id', id=u.id) }}"
+                     class="btn-icon"
+                     title="Ver perfil">
+                    <i class="fa-solid fa-user"></i>
+                  </a>
+                  <a href="{{ url_for('admin.editar_usuario', id=u.id) }}"
+                     class="btn-icon"
+                     title="Editar">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                  <form action="{{ url_for('admin.usuario_id_eliminar', id=u.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-users-slash empty-icon"></i>
+        <h3>No se encontraron usuarios</h3>
+        <p>Ajusta los filtros de búsqueda para ver más resultados.</p>
+        <a href="{{ url_for('admin.usuario') }}"
+           class="res-btn btn-secondary mt-3">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

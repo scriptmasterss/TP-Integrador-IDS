@@ -1,0 +1,63 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='nueva_penalizacion' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Nueva penalización</span>
+  </div>
+  <div class="history-container reveal delay-1">
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    <div class="history-header">
+      <h2>Nueva penalización</h2>
+      <p class="text-muted">Registrá una penalización asociada a una reserva específica.</p>
+    </div>
+    <form data-validate="bibliotecario-penalizacion"
+          class="admin-form"
+          method="POST"
+          action="{{ url_for('bibliotecario.nueva_penalizacion') }}">
+      <div class="data-grid">
+        <input type="hidden" name="id_usuario" value="{{ id_usuario }}" />
+        <input type="hidden" name="id_reserva" value="{{ id_reserva }}" />
+        <div class="data-group">
+          <label for="motivo">Motivo</label>
+          <input id="motivo"
+                 type="text"
+                 name="motivo"
+                 class="admin-input"
+                 placeholder="Ej: Entrega tardía"
+                 required />
+        </div>
+        <div class="data-group">
+          <label for="severidad">Severidad</label>
+          <select id="severidad" name="severidad" class="admin-input" required>
+            <option value="baja">Baja</option>
+            <option value="media" selected>Media</option>
+            <option value="alta">Alta</option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="fecha_fin">Fecha de finalización</label>
+          <input id="fecha_fin"
+                 type="datetime-local"
+                 name="fecha_fin"
+                 class="admin-input"
+                 required />
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.dashboard') }}"
+           class="res-btn btn-secondary btn-inline">Cancelar</a>
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-gavel"></i> Aplicar penalización
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

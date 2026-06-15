@@ -1,0 +1,115 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='usuario_detalle' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('bibliotecario.usuario') }}">Usuarios</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Editar Usuario #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <form action="{{ url_for('bibliotecario.usuario_id_editar', id=datos.id) }}"
+          method="POST"
+          class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Editar: {{ datos.nombre }} <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Modifica las credenciales, el rol y la carrera del usuario.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label for="legajo"><i class="fa-solid fa-id-card"></i> Legajo</label>
+          <input type="number"
+                 id="legajo"
+                 name="legajo"
+                 class="auth-input"
+                 value="{{ datos.legajo if datos.legajo is not none else '' }}">
+        </div>
+        <div class="data-group">
+          <label for="nombre"><i class="fa-solid fa-user"></i> Nombre</label>
+          <input type="text"
+                 id="nombre"
+                 name="nombre"
+                 class="auth-input"
+                 value="{{ datos.nombre }}"
+                 required
+                 maxlength="50">
+        </div>
+        <div class="data-group">
+          <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+          <input type="email"
+                 id="email"
+                 name="email"
+                 class="auth-input"
+                 value="{{ datos.email }}"
+                 required
+                 maxlength="50">
+        </div>
+        <div class="data-group">
+          <label for="rol"><i class="fa-solid fa-user-shield"></i> Rol</label>
+          <select id="rol" name="rol" class="auth-input">
+            <option value="alumno" {{ 'selected' if datos.rol == 'alumno' }}>Alumno</option>
+            <option value="profesor" {{ 'selected' if datos.rol == 'profesor' }}>Profesor</option>
+            <option value="bibliotecario" {{ 'selected' if datos.rol == 'bibliotecario' }}>Bibliotecario</option>
+            <option value="admin" {{ 'selected' if datos.rol == 'admin' }}>Admin</option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="carrera"><i class="fa-solid fa-graduation-cap"></i> Carrera</label>
+          <select id="carrera" name="carrera" class="auth-input">
+            <option value="Ingeniería Civil" {{ 'selected' if datos.carrera == 'Ingeniería Civil' }}>Ingeniería Civil</option>
+            <option value="Ingeniería en Alimentos" {{ 'selected' if datos.carrera == 'Ingeniería en Alimentos' }}>Ingeniería en Alimentos</option>
+            <option value="Ingeniería en Energía Eléctrica" {{ 'selected' if datos.carrera == 'Ingeniería en Energía Eléctrica' }}>Ingeniería en Energía Eléctrica</option>
+            <option value="Ingeniería Electrónica" {{ 'selected' if datos.carrera == 'Ingeniería Electrónica' }}>Ingeniería Electrónica</option>
+            <option value="Ingeniería en Agrimensura" {{ 'selected' if datos.carrera == 'Ingeniería en Agrimensura' }}>Ingeniería en Agrimensura</option>
+            <option value="Ingeniería en Informática" {{ 'selected' if datos.carrera == 'Ingeniería en Informática' }}>Ingeniería en Informática</option>
+            <option value="Ingeniería en Petróleo" {{ 'selected' if datos.carrera == 'Ingeniería en Petróleo' }}>Ingeniería en Petróleo</option>
+            <option value="Ingeniería Industrial" {{ 'selected' if datos.carrera == 'Ingeniería Industrial' }}>Ingeniería Industrial</option>
+            <option value="Ingeniería Mecánica" {{ 'selected' if datos.carrera == 'Ingeniería Mecánica' }}>Ingeniería Mecánica</option>
+            <option value="Ingeniería Naval" {{ 'selected' if datos.carrera == 'Ingeniería Naval' }}>Ingeniería Naval</option>
+            <option value="Ingeniería Química" {{ 'selected' if datos.carrera == 'Ingeniería Química' }}>Ingeniería Química</option>
+            <option value="Lic. en Análisis de Sistemas" {{ 'selected' if datos.carrera == 'Lic. en Análisis de Sistemas' }}>Lic. en Análisis de Sistemas</option>
+            <option value="Bioingeniería" {{ 'selected' if datos.carrera == 'Bioingeniería' }}>Bioingeniería</option>
+            <option value="Desconocido" {{ 'selected' if datos.carrera == 'Desconocido' }}>Desconocido</option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="activo"><i class="fa-solid fa-power-off"></i> Estado en Sistema</label>
+          <select id="activo" name="activo" class="auth-input">
+            <option value="1" {{ 'selected' if datos.activo }}>Activo</option>
+            <option value="0" {{ 'selected' if not datos.activo }}>Inactivo</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions mt-4" style="display: flex; gap: 10px;">
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        <a href="{{ url_for('bibliotecario.usuario') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el usuario</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.usuario') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

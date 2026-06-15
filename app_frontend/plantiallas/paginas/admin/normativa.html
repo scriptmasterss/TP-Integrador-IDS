@@ -1,0 +1,98 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Admin{% endblock %}
+{% block sidebar_links %}
+  {% with activo='normativa' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Normativas</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Gestión de Normativas</h2>
+    <p class="text-muted">Consulta y administra el registro de normativas vigentes.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Buscar por título o descripción"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Búsqueda: {{ q }}</span>{% endif %}
+        {% if q %}<a href="{{ url_for('admin.normativa') }}">Limpiar</a>{% endif %}
+      </div>
+    </form>
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Descripción</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for n in datos %}
+              <tr>
+                <td><span class="text-sm text-grey">#{{ n.id }}</span></td>
+                <td><strong>{{ n.titulo }}</strong></td>
+                <td>
+                  {{ n.descripcion[:100] }}
+                  {% if n.descripcion|length > 100 %}...{% endif %}
+                </td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('admin.normativa_id', id=n.id) }}"
+                     class="btn-icon"
+                     title="Ver detalle">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  <a href="{{ url_for('admin.editar_normativa', id=n.id) }}"
+                     class="btn-icon"
+                     title="Editar normativa">
+                    <i class="fa-solid fa-pencil"></i>
+                  </a>
+                  <form action="{{ url_for('admin.normativa_id_eliminar', id=n.id) }}"
+                        method="POST">
+                    <button type="submit" class="btn-icon" title="Eliminar Reserva">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-book-bookmark empty-icon"></i>
+        <h3>No hay normativas que coincidan con la búsqueda</h3>
+        <p>Sin Resultados</p>
+        <p>Intenta ajustar el término de búsqueda o limpia los filtros.</p>
+        <a href="{{ url_for('admin.normativa') }}"
+           class="res-btn btn-secondary mt-3 badge-lg">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

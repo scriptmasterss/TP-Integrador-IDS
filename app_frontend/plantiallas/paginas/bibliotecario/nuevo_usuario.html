@@ -1,0 +1,80 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='nuevo_usuario' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Nuevo usuario</span>
+  </div>
+  <div class="history-container reveal delay-1">
+    {% include 'componentes/mensaje_de_error.html' %}
+    {% include 'componentes/mensaje_de_exito.html' %}
+    <div class="history-header">
+      <h2>Nuevo usuario</h2>
+      <p class="text-muted">Completá los datos para registrar un nuevo usuario en el sistema.</p>
+    </div>
+    <form data-validate="bibliotecario-usuario"
+          class="admin-form"
+          method="POST"
+          action="{{ url_for('bibliotecario.nuevo_usuario') }}">
+      <div class="data-grid">
+        <div class="data-group">
+          <label for="nombre">Nombre completo</label>
+          <input id="nombre" type="text" name="nombre" class="admin-input" required />
+        </div>
+        <div class="data-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" class="admin-input" required />
+        </div>
+        <div class="data-group">
+          <label for="rol">Rol</label>
+          <select id="rol" name="rol" class="admin-input" required>
+            <option value="alumno">Alumno</option>
+            <option value="profesor">Profesor</option>
+            <option value="bibliotecario">Bibliotecario</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="carrera">Carrera</label>
+          <select id="carrera" name="carrera" class="admin-input" required>
+            <option value="Ingeniería Civil">Ingeniería Civil</option>
+            <option value="Ingeniería en Alimentos">Ingeniería en Alimentos</option>
+            <option value="Ingeniería en Energía Eléctrica">Ingeniería en Energía Eléctrica</option>
+            <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
+            <option value="Ingeniería en Agrimensura">Ingeniería en Agrimensura</option>
+            <option value="Ingeniería en Informática">Ingeniería en Informática</option>
+            <option value="Ingeniería en Petróleo">Ingeniería en Petróleo</option>
+            <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+            <option value="Ingeniería Mecánica">Ingeniería Mecánica</option>
+            <option value="Ingeniería Naval">Ingeniería Naval</option>
+            <option value="Ingeniería Química">Ingeniería Química</option>
+            <option value="Lic. en Análisis de Sistemas">Lic. en Análisis de Sistemas</option>
+            <option value="Bioingeniería">Bioingeniería</option>
+            <option value="Desconocido" selected>Desconocido</option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="contrasenia">Contraseña</label>
+          <input id="contrasenia"
+                 type="password"
+                 name="contrasenia"
+                 class="admin-input"
+                 required />
+        </div>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.dashboard') }}"
+           class="res-btn btn-secondary btn-inline">Cancelar</a>
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-user-plus"></i> Crear usuario
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

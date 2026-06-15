@@ -1,0 +1,161 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}Alumno{% endblock %}
+{% block sidebar_links %}
+  {% with activo='penalizacion' %}
+    {% include 'componentes/links_alumno.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('alumno.perfil') }}">Alumno</a> <i class="fa-solid fa-chevron-right"></i>
+    <span>Listado de penalizaciones</span>
+  </div>
+  <div class="history-header reveal">
+    <h2 class="mt-0 mb-1">Listado de penalizaciones</h2>
+    <p class="text-muted">Consulta el registro completo de tus penalizaciones.</p>
+  </div>
+  <section class="history-list reveal delay-2">
+    <form method="GET"
+          action="{{ url_for(request.endpoint) }}"
+          class="history-filters mb-4">
+      <div class="history-filter-bar">
+        <div class="data-group history-filter-search">
+          <label for="q">Buscador</label>
+          <input id="q"
+                 type="search"
+                 name="q"
+                 class="admin-input"
+                 placeholder="Nombre del articulo"
+                 value="{{ q }}" />
+        </div>
+        <button type="submit"
+                class="res-btn btn-primary btn-inline history-search-button">
+          <i class="fa-solid fa-magnifying-glass"></i> Buscar
+        </button>
+        <details class="history-advanced-filters">
+          <summary class="res-btn btn-secondary btn-inline history-filter-toggle">
+            <i class="fa-solid fa-sliders"></i>
+            Filtros
+          </summary>
+          <div class="history-filter-panel">
+            <div class="data-group">
+              <label for="activa">Estado</label>
+              <select id="activa" name="activa" class="admin-select">
+                <option value="" {% if activa == '' %}selected{% endif %}>Todos</option>
+                <option value="False" {% if activa == 'False' %}selected{% endif %}>Inactiva</option>
+                <option value="True" {% if activa == 'True' %}selected{% endif %}>Activa</option>
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="severidad">Severidad</label>
+              <select id="severidad" name="severidad" class="admin-select">
+                <option value="" {% if severidad == '' %}selected{% endif %}>Todas</option>
+                <option value="baja" {% if severidad == 'baja' %}selected{% endif %}>baja</option>
+                <option value="media" {% if severidad == 'media' %}selected{% endif %}>media</option>
+                <option value="alta" {% if severidad == 'alta' %}selected{% endif %}>alta</option>
+              </select>
+            </div>
+            <div class="data-group">
+              <label for="motivo">Motivo</label>
+              <input id="motivo"
+                     type="text"
+                     name="motivo"
+                     placeholder="Motivo"
+                     class="admin-input"
+                     value="{{ motivo }}" />
+            </div>
+            <div class="data-group">
+              <label for="fecha_inicio">Fecha inicio</label>
+              <input id="fecha_inicio"
+                     type="date"
+                     name="fecha_inicio"
+                     class="admin-input"
+                     value="{{ fecha_inicio }}" />
+            </div>
+            <div class="data-group">
+              <label for="fecha_fin">Fecha fin</label>
+              <input id="fecha_fin"
+                     type="date"
+                     name="fecha_fin"
+                     class="admin-input"
+                     value="{{ fecha_fin }}" />
+            </div>
+            <div class="history-filter-panel-actions">
+              <button type="submit" class="res-btn btn-primary btn-inline">
+                <i class="fa-solid fa-filter"></i> Aplicar filtros
+              </button>
+              <a href="{{ url_for('alumno.penalizacion') }}"
+                 class="res-btn btn-secondary btn-inline">
+                <i class="fa-solid fa-rotate-left"></i> Limpiar
+              </a>
+            </div>
+          </div>
+        </details>
+      </div>
+      <div class="history-active-filters">
+        {% if q %}<span>Busqueda: {{ q }}</span>{% endif %}
+        {% if motivo %}<span>Motivo: {{ motivo }}</span>{% endif %}
+        {% if severidad %}<span>Severidad: {{ severidad }}</span>{% endif %}
+        {% if fecha_inicio %}<span>Inicio: {{ fecha_inicio }}</span>{% endif %}
+        {% if fecha_fin %}<span>Fin: {{ fecha_fin }}</span>{% endif %}
+        <a href="{{ url_for('alumno.penalizacion') }}">Limpiar</a>
+      </div>
+      {% if error %}<p class="text-danger fw-bold mt-3">{{ error }}</p>{% endif %}
+    </form>
+    {% if datos %}
+      <div class="history-table-wrapper table-card">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Motivo</th>
+              <th>Severidad</th>
+              <th>Fechas</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for penalizacion in datos %}
+              <tr>
+                <td>
+                  <strong>{{ penalizacion.motivo }}</strong>
+                  <br />
+                  <span class="text-sm text-grey">ID: {{ penalizacion.id }}</span>
+                </td>
+                <td><span class="badge {% if penalizacion.severidad == 'alta' %}badge-warning{% elif penalizacion.severidad == 'media' %}badge-warning{% else %}badge-success{% endif %}">{{ penalizacion.severidad }}</span></td>
+                <td>
+                  <div class="date-cell">
+                    <i class="fa-regular fa-calendar"></i>
+                    <small>
+                      <strong>Inicio:</strong> {{ penalizacion.fecha_inicio }} {{ penalizacion.hora_inicio }}
+                      <br>
+                      <strong>Fin:</strong> {{ penalizacion.fecha_fin }} {{ penalizacion.hora_fin }}
+                    </small>
+                  </div>
+                </td>
+                <td><span class="badge {% if penalizacion.activa %}badge-danger{% else %}badge-warning{% endif %}">{{ "Activa" if penalizacion.activa else "Inactiva" }}</span></td>
+                <td class="action-cell text-center">
+                  <a href="{{ url_for('alumno.reserva_id', id=penalizacion.id_reserva) }}"
+                     class="btn-icon"
+                     title="Ver reserva">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include 'componentes/paginacion.html' %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-clock-rotate-left empty-icon"></i>
+        <h3>No hay penalizaciones que coincidan con los filtros</h3>
+        <p>Sin Resultados</p>
+        <p>Intenta ajustar los criterios de busqueda o limpiar los filtros.</p>
+        <a href="{{ url_for('alumno.penalizacion') }}"
+           class="res-btn btn-secondary mt-3 badge-lg">Limpiar filtros</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

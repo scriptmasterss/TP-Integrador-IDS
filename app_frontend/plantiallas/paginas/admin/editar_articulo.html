@@ -1,0 +1,112 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Admin') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='articulo_detalle' %}
+    {% include 'componentes/links_admin.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('admin.perfil') }}">Admin</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('admin.articulos') }}">Artículos</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Editar Artículo #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <form action="{{ url_for('admin.articulo_id_editar', id=datos.id) }}"
+          method="POST"
+          class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Editar: {{ datos.nombre }} <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Modifica los detalles técnicos y el estado del inventario.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label for="nombre"><i class="fa-solid fa-font"></i> Nombre</label>
+          <input type="text"
+                 id="nombre"
+                 name="nombre"
+                 class="auth-input"
+                 value="{{ datos.nombre }}"
+                 required
+                 maxlength="50">
+        </div>
+        <div class="data-group">
+          <label for="tipo"><i class="fa-solid fa-tag"></i> Tipo</label>
+          <input type="text"
+                 id="tipo"
+                 name="tipo"
+                 class="auth-input"
+                 value="{{ datos.tipo }}"
+                 required
+                 maxlength="50">
+        </div>
+        <div class="data-group">
+          <label for="seccion"><i class="fa-solid fa-location-dot"></i> Sección</label>
+          <input type="text"
+                 id="seccion"
+                 name="seccion"
+                 class="auth-input"
+                 value="{{ datos.seccion }}"
+                 required
+                 maxlength="50">
+        </div>
+        <div class="data-group">
+          <label for="stock"><i class="fa-solid fa-boxes-stacked"></i> Stock (Unidades)</label>
+          <input type="number"
+                 id="stock"
+                 name="stock"
+                 class="auth-input"
+                 value="{{ datos.stock }}"
+                 min="0"
+                 required>
+        </div>
+        <div class="data-group">
+          <label for="necesita_reparacion"><i class="fa-solid fa-wrench"></i> Estado Operativo</label>
+          <select id="necesita_reparacion"
+                  name="necesita_reparacion"
+                  class="auth-input">
+            <option value="0" {{ 'selected' if not datos.necesita_reparacion }}>Operativo
+            </option>
+            <option value="1" {{ 'selected' if datos.necesita_reparacion }}>Requiere reparación
+            </option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="activo"><i class="fa-solid fa-power-off"></i> Estado en Sistema</label>
+          <select id="activo" name="activo" class="auth-input">
+            <option value="1" {{ 'selected' if datos.activo }}>Activo
+            </option>
+            <option value="0" {{ 'selected' if not datos.activo }}>Inactivo
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions mt-4" style="display: flex; gap: 10px;">
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        <a href="{{ url_for('admin.articulos') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el artículo</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('admin.articulos') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

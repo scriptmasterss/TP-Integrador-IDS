@@ -1,0 +1,120 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Bibliotecario') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='penalizacion_detalle' %}
+    {% include 'componentes/links_bibliotecario.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  {% include 'componentes/mensaje_de_exito.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('bibliotecario.perfil') }}">Bibliotecario</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('bibliotecario.penalizacion') }}">Penalizaciones</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Editar Penalización #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <form action="{{ url_for('bibliotecario.penalizacion_id_editar', id=datos.id) }}"
+          method="POST"
+          class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Editar Penalización <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Modifica los plazos de vigencia, motivos y el nivel de restricción del usuario.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label for="id_usuario"><i class="fa-solid fa-user"></i> ID Usuario</label>
+          <input type="number"
+                 id="id_usuario"
+                 name="id_usuario"
+                 class="auth-input"
+                 value="{{ datos.id_usuario }}"
+                 required
+                 min="1">
+        </div>
+        <div class="data-group">
+          <label for="id_reserva"><i class="fa-solid fa-receipt"></i> ID Reserva</label>
+          <input type="number"
+                 id="id_reserva"
+                 name="id_reserva"
+                 class="auth-input"
+                 value="{{ datos.id_reserva }}"
+                 required
+                 min="1">
+        </div>
+        <div class="data-group">
+          <label for="motivo"><i class="fa-solid fa-comment-slash"></i> Motivo</label>
+          <input type="text"
+                 id="motivo"
+                 name="motivo"
+                 class="auth-input"
+                 value="{{ datos.motivo }}"
+                 required
+                 maxlength="255">
+        </div>
+        <div class="data-group">
+          <label for="severidad"><i class="fa-solid fa-triangle-exclamation"></i> Severidad</label>
+          <select id="severidad" name="severidad" class="auth-input">
+            <option value="baja" {{ 'selected' if datos.severidad == 'baja' }}>Baja
+            </option>
+            <option value="media" {{ 'selected' if datos.severidad == 'media' }}>Media
+            </option>
+            <option value="alta" {{ 'selected' if datos.severidad == 'alta' }}>Alta
+            </option>
+          </select>
+        </div>
+        <div class="data-group">
+          <label for="fecha_inicio"><i class="fa-solid fa-calendar-minus"></i> Fecha de Inicio</label>
+          <input type="datetime-local"
+                 id="fecha_inicio"
+                 name="fecha_inicio"
+                 class="auth-input"
+                 value="{{ datos.fecha_inicio }}"
+                 required>
+        </div>
+        <div class="data-group">
+          <label for="fecha_fin"><i class="fa-solid fa-calendar-xmark"></i> Fecha de Fin</label>
+          <input type="datetime-local"
+                 id="fecha_fin"
+                 name="fecha_fin"
+                 class="auth-input"
+                 value="{{ datos.fecha_fin }}"
+                 required>
+        </div>
+        <div class="data-group">
+          <label for="activa"><i class="fa-solid fa-power-off"></i> Estado en Sistema</label>
+          <select id="activa" name="activa" class="auth-input">
+            <option value="1" {{ 'selected' if datos.activa }}>Activa
+            </option>
+            <option value="0" {{ 'selected' if not datos.activa }}>Inactiva
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="form-actions mt-4" style="display: flex; gap: 10px;">
+        <button type="submit" class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+        </button>
+        <a href="{{ url_for('bibliotecario.penalizacion') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </a>
+      </div>
+    </form>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar la penalización</h3>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('bibliotecario.penalizacion') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

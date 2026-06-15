@@ -1,0 +1,74 @@
+{% extends "layouts/base_dashboard.html" %}
+{% block usuario_name %}{{ session.get('usuario', {}).get('nombre', 'Alumno') }}{% endblock %}
+{% block sidebar_links %}
+  {% with activo='reserva_detalle' %}
+    {% include 'componentes/links_alumno.html' %}
+  {% endwith %}
+{% endblock %}
+{% block dashboard_content %}
+  {% include 'componentes/mensaje_de_error.html' %}
+  <div class="breadcrumb reveal">
+    <a href="{{ url_for('alumno.perfil') }}">Alumno</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <a href="{{ url_for('alumno.reserva') }}">Mis reservas</a>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span>Detalle #{{ datos.id if datos else '' }}</span>
+  </div>
+  {% if datos %}
+    <div class="history-container reveal delay-1">
+      <div class="history-header">
+        <h2>Detalle de la Reserva <span class="text-muted">#{{ datos.id }}</span></h2>
+        <p class="text-muted">Información completa y código QR para el retiro.</p>
+      </div>
+      <div class="data-grid mt-data-grid">
+        <div class="data-group">
+          <label>Estado</label>
+          <div class="data-value">
+            <span class="badge badge-success">{{ datos.estado_reserva }}</span>
+          </div>
+        </div>
+        <div class="data-group">
+          <label>Fecha de Retiro</label>
+          <div class="data-value">{{ datos.fecha_retiro }}</div>
+        </div>
+        <div class="data-group">
+          <label>Fecha de Regreso</label>
+          <div class="data-value">{{ datos.fecha_regreso }}</div>
+        </div>
+        <a href="{{ url_for('bibliotecario.penalizacion_id', id=r.id_penalizacion) }}"
+           class="btn-icon"
+           title="Ver detalles penalización">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </a>
+      </div>
+      <div class="qr-section mt-4">
+        <p class="fw-bold mb-2">Código QR para retiro</p>
+        <img src="{{ qr_src }}" alt="QR de reserva" class="qr-image" />
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('alumno.reserva') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver al historial
+        </a>
+        <a href="{{ url_for('alumno.comprobante', id=datos.id) }}"
+           class="res-btn btn-primary btn-inline">
+          <i class="fa-solid fa-file-invoice"></i> Ver comprobante completo
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="history-container reveal delay-1">
+      <div class="empty-state">
+        <i class="fa-solid fa-triangle-exclamation empty-icon text-danger"></i>
+        <h3>No se pudo cargar el detalle</h3>
+        <p>{{ fetch_error if fetch_error else 'No se encontró la reserva.' }}</p>
+      </div>
+      <div class="form-actions mt-4">
+        <a href="{{ url_for('alumno.historial') }}"
+           class="res-btn btn-secondary btn-inline">
+          <i class="fa-solid fa-arrow-left"></i> Volver al historial
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
