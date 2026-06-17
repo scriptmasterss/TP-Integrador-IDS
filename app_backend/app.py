@@ -9,6 +9,7 @@ import config
 from database import init_database
 from routes.auth_route import auth_bp
 from routes.articulos_route import articulos_bp
+from routes.estado_devuelto_route import estado_devuelto_bp
 from routes.reservas_route import reservas_bp
 from routes.normativas_route import normativas_bp
 from routes.penalizaciones_route import penalizaciones_bp
@@ -30,6 +31,7 @@ app.register_blueprint(usuarios_bp)
 app.register_blueprint(qr_bp)
 app.register_blueprint(reportes_bp)
 app.register_blueprint(normativas_bp)
+app.register_blueprint(estado_devuelto_bp)
 
 HERE = os.path.dirname(__file__)
 

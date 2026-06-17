@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS reserva (
 
 CREATE TABLE IF NOT EXISTS estado_devuelto (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  id_reserva INT NOT NULL,
+  id_reserva INT NOT NULL UNIQUE,
   dias_retraso INT DEFAULT 0,
   condiciones VARCHAR(255),
   FOREIGN KEY (id_reserva) REFERENCES reserva(id)

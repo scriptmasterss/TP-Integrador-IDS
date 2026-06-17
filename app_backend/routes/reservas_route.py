@@ -143,12 +143,14 @@ def obtener_detalle_reserva_db(reserva_id):
             articulos.nombre_art,
             reserva.estado_reserva,
             reserva.fecha_retiro,
-            reserva.fecha_regreso
+            reserva.fecha_regreso,
+            e.condiciones
         FROM reserva
         JOIN usuario
             ON reserva.id_usuario = usuario.id
         JOIN articulos
             ON reserva.id_reservado = articulos.id
+        LEFT JOIN estado_devuelto e ON reserva.id = e.id_reserva
         WHERE reserva.id = %s
         """,
         (reserva_id,),

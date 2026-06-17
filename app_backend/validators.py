@@ -529,9 +529,38 @@ def valid_reserva_status_update(data):
     if not isinstance(data.get("estado_reserva"), str):
         return False, "invalid_type:estado_reserva"
 
-    allowed_statuses = ("pendiente", "aprobado", "entregado", "devuelto", "cancelado")
+    allowed_statuses = ("pendiente", "aprobado", "rechazado", "entregado", "devuelto", "cancelado")
     if data.get("estado_reserva") not in allowed_statuses:
         return False, "invalid_value:estado_reserva"
+
+    return True, None
+
+
+def valid_condiciones(data):
+    """Valida el payload de actualización de estado devuelto de un préstamo.
+
+    Verifica que el campo condiciones esté presente, sea una cadena
+    y contenga uno de los estados permitidos.
+
+    Args:
+        data (dict): Diccionario con el nuevo estado devuelto del préstamo.
+
+    Returns:
+        tuple: (True, None) si es válido, (False, str) con mensaje de error
+            si no lo es.
+
+    """
+    if not isinstance(data, dict):
+        return False, "payload_must_be_object"
+
+    if data.get("condiciones") is None:
+        return False, "missing:condiciones"
+    if not isinstance(data.get("condiciones"), str):
+        return False, "invalid_type:condiciones"
+
+    estados_permitidos = ("no_aplica", "bueno", "dañado", "perdido")
+    if data.get("condiciones") not in estados_permitidos:
+        return False, "invalid_value:condiciones"
 
     return True, None
 
