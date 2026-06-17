@@ -2,7 +2,7 @@
 # Funciones de servicio para consumir endpoints /reservas
 from flask import session
 
-from servicios.api_client import get_json, post_json, patch_json
+from servicios.api_client import get_json, post_json, patch_json, put_json
 
 TIMEOUT = 5
 
@@ -44,6 +44,19 @@ def establecer_estado_reserva(reserva_id, status_data, token=None):
     """
     
     payload, error, status = patch_json(f"/reservas/{reserva_id}/status", status_data, token=token)
+    if error:
+        return False
+    return True
+
+def establecer_estado_devuelto(reserva_id, estado_devuelto, retraso, token=None):
+    """PUT /estado_devuelto/{reserva_id}
+    estado_devuelto: no_aplica, bueno, dañado, perdido
+    retrazo: dias de retrazo
+    Devuelve True en caso de éxito, False en caso de fallo.
+    """
+    cuerpo = {"condiciones": estado_devuelto, "dias_retraso": retraso}
+    
+    payload, error, status = put_json(f"/estado_devuelto/{reserva_id}", cuerpo, token=token)
     if error:
         return False
     return True

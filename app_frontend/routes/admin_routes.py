@@ -1,5 +1,7 @@
 """Rutas del area de administracion."""
 
+from datetime import datetime
+
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from servicios.api_client import obtener_detalle_reserva
@@ -32,6 +34,17 @@ def reserva_detalle(id):
         return redirect(url_for("public.home"))
 
     if request.method == "POST":
+        nuevo_estado = request.form.get("nuevo_estado")
+        estado_devuelto = request.form.get("estado_devuelto")
+        dias_retraso = request.form.get("dias_retraso")
+        exito = reservas_servicio.establecer_estado_reserva(id, {"estado_reserva": nuevo_estado}, token)
+        if not exito:
+            return redirect(url_for("admin.reserva_detalle", id=id, error="No se logro actualizar el estado general"))
+
+        exito = reservas_servicio.establecer_estado_devuelto(id, estado_devuelto, dias_retraso, token)
+        if not exito:
+            return redirect(url_for("admin.reserva_detalle", id=id, error="No se logro actualizar el estado devuelto"))
+
         return redirect(url_for("admin.reserva_detalle", id=id))
 
     estado_clases = {
@@ -44,6 +57,7 @@ def reserva_detalle(id):
 
     try:
         datos_api = obtener_detalle_reserva(id)
+        fecha_regreso = datetime.strptime(datos_api.get("fecha_regreso"), "%a, %d %b %Y %H:%M:%S %Z")
         estado = datos_api.get("estado_reserva", "pendiente")
         reserva = {
             "id": datos_api.get("id", id),
@@ -57,6 +71,8 @@ def reserva_detalle(id):
             "titular_carrera": datos_api.get("carrera", "No definida"),
             "fecha_retiro": datos_api.get("fecha_retiro", "N/A"),
             "fecha_limite": datos_api.get("fecha_regreso", "N/A"),
+            "estado_fisico": datos_api.get("condiciones", "no_aplica"),
+            "dias_retraso": max(0, (datetime.now().date() - fecha_regreso.date()).days)
         }
     except Exception:
         reserva = {
@@ -73,7 +89,7 @@ def reserva_detalle(id):
             "fecha_limite": "N/A",
         }
 
-    return render_template("admin/reserva_detalle_admin.html", reserva=reserva)
+    return render_template("admin/reserva_detalle_admin.html", reserva=reserva, error=request.args.get("error"))
 
 
 @admin_bp.route("/articulos")

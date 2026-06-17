@@ -106,33 +106,39 @@
 
     <div class="admin-actions-card profile-card">
       <h3><i class="fa-solid fa-sliders"></i> Panel de Acciones</h3>
+      {% if error %}
+        <div class="ticket-status status-rechazado badge-lg">
+          {{ error }}
+        </div>
+      {% endif %}
       <form
         action="{{ url_for('admin.reserva_detalle', id=reserva.id) }}"
         method="POST"
         class="admin-form">
+        <input type="hidden" name="dias_retraso" value="{{ reserva.dias_retraso }}">
+
         <div class="form-group mb-4">
           <label>Cambiar Estado General</label>
           <select class="form-control admin-select" name="nuevo_estado">
-            <option value="pendiente">Pendiente de Retiro</option>
-            <option value="aprobado">Aprobado</option>
-            <option value="devuelto">Devuelto</option>
-            <option value="rechazado">Rechazado</option>
-            <option value="cancelado">Cancelado</option>
+            <option value="pendiente" {% if reserva.estado_general == 'pendiente' %}selected{% endif %}>Pendiente de Retiro</option>
+            <option value="aprobado" {% if reserva.estado_general == 'aprobado' %}selected{% endif %}>Aprobado</option>
+            <option value="devuelto" {% if reserva.estado_general == 'devuelto' %}selected{% endif %}>Devuelto</option>
+            <option value="rechazado" {% if reserva.estado_general == 'rechazado' %}selected{% endif %}>Rechazado</option>
+            <option value="cancelado" {% if reserva.estado_general == 'cancelado' %}selected{% endif %}>Cancelado</option>
           </select>
         </div>
 
         <div class="form-group mb-4">
           <label>Estado Físico (Al Devolver)</label>
           <select class="form-control admin-select" name="estado_devuelto">
-            <option value="no_aplica">No aplica aún</option>
-            <option value="bueno">Buen estado (Sin daños)</option>
-            <option value="danado">Dañado (Requiere revisión)</option>
-            <option value="perdido">Extraviado / No devuelto</option>
+            <option value="no_aplica" {% if reserva.estado_fisico == 'no_aplica' %}selected{% endif %}>No aplica aún</option>
+            <option value="bueno" {% if reserva.estado_fisico == 'bueno' %}selected{% endif %}>Buen estado (Sin daños)</option>
+            <option value="dañado" {% if reserva.estado_fisico == 'dañado' %}selected{% endif %}>Dañado (Requiere revisión)</option>
+            <option value="perdido" {% if reserva.estado_fisico == 'perdido' %}selected{% endif %}>Extraviado / No devuelto</option>
           </select>
         </div>
-
         <button type="submit" class="res-btn btn-primary mt-3 btn-block btn-lg">
-          <i class="fa-solid fa-check-double"></i> Registrar Devolución
+          <i class="fa-solid fa-check-double"></i> Actualizar estados
         </button>
       </form>
     </div>
