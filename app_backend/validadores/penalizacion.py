@@ -13,6 +13,7 @@ MAPA_VALIDADORES = {
     "activa": validadores.general.booleano,
     "severidad": validadores.general.texto,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 ENUM_SEVERIDAD = ["baja", "alta", "media"]

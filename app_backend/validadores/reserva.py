@@ -11,6 +11,7 @@ MAPA_VALIDADORES = {
     "fecha_retiro": validadores.general.fecha,
     "fecha_regreso": validadores.general.fecha,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 NO_ES_ESTADO_VALIDO = "valor no es pendiente, aprobado, rechazado, entregado, o devuelto"

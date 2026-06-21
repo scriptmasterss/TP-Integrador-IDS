@@ -46,9 +46,24 @@ def leer_paginado(conexion, pagina=1, limite=LIMITE_POR_DEFECTO, offset=None, fi
 
     clausula_where = ""
     if filtros is not None and filtros:
+        q = filtros.pop("q", None)
+
         if "id_usuario" in filtros:
             filtros[f"{OBJETO}.id_usuario"] = filtros.pop("id_usuario")
         condiciones = " AND ".join([f"{llave} = %({llave})s" for llave in filtros.keys()])
+
+        if q is not None:
+            if condiciones != "":
+                condiciones += " AND "
+            condiciones += f"""(
+                {OBJETO}.id = %(q)s OR
+                {OBJETO}.id_usuario = %(q)s OR
+                {OBJETO}.id_articulo = %(q)s OR
+                articulos.nombre LIKE %(q_amplio)s
+            )"""
+            filtros["q"] = q
+            filtros["q_amplio"] = f"%{q}%"
+
         clausula_where = f"WHERE {condiciones}"
 
     query = f"""
@@ -80,7 +95,11 @@ def leer_paginado(conexion, pagina=1, limite=LIMITE_POR_DEFECTO, offset=None, fi
     valores = {"limite": limite, "offset": offset, **(filtros or {})}
 
     query_de_cuenta = f"""
-    SELECT COUNT(*) as total FROM {OBJETO} {clausula_where}
+    SELECT COUNT(*) as total
+    FROM {OBJETO}
+    LEFT JOIN articulos ON id_articulo = articulos.id
+    LEFT JOIN penalizacion ON {OBJETO}.id = penalizacion.id_reserva
+    {clausula_where}
     """
 
     try:

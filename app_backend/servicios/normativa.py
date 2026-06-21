@@ -42,7 +42,19 @@ def leer_paginado(conexion, pagina=1, limite=LIMITE_POR_DEFECTO, offset=None, fi
 
     clausula_where = ""
     if filtros is not None and filtros:
+        q = filtros.pop("q", None)
+
         condiciones = " AND ".join([f"{llave} = %({llave})s" for llave in filtros.keys()])
+
+        if q is not None:
+            if condiciones != "":
+                condiciones += " AND "
+            condiciones += (
+                f"({OBJETO}.id = %(q)s OR {OBJETO}.titulo LIKE %(q_amplio)s OR {OBJETO}.descripcion LIKE %(q_amplio)s)"
+            )
+            filtros["q"] = q
+            filtros["q_amplio"] = f"%{q}%"
+
         clausula_where = f"WHERE {condiciones}"
 
     query = f"""

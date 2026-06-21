@@ -9,6 +9,7 @@ MAPA_VALIDADORES = {
     "dias_retraso": validadores.general.numero_positivo_con_cero,
     "condiciones": validadores.general.texto,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 

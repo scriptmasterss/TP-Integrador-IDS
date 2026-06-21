@@ -12,6 +12,7 @@ MAPA_VALIDADORES = {
     "necesita_reparacion": validadores.general.booleano,
     "activo": validadores.general.booleano,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 

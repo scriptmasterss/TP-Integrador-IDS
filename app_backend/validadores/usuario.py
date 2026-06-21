@@ -13,6 +13,7 @@ MAPA_VALIDADORES = {
     "activo": validadores.general.booleano,
     "rol": validadores.general.texto,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 NO_ES_ROL_VALIDO = "valor no es alumno, profesor, bibliotecario, o admin"

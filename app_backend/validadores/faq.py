@@ -8,6 +8,7 @@ MAPA_VALIDADORES = {
     "titulo": validadores.general.texto,
     "descripcion": validadores.general.texto,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 

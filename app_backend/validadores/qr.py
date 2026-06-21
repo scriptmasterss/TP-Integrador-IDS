@@ -10,6 +10,7 @@ MAPA_VALIDADORES = {
     "codigo": validadores.general.texto,
     "escaneado": validadores.general.booleano,
     "id": validadores.general.numero_positivo,
+    "q": validadores.general.texto,
 }
 
 
